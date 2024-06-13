@@ -3,9 +3,10 @@
 	import '../app.css';
 </script>
 
-<Header />
-<main>
-	<slot></slot>
-</main>
+<slot />
 
-<style></style>
+<style>
+	:global(:root) {
+		--width-sidebar: 250px;
+	}
+</style>

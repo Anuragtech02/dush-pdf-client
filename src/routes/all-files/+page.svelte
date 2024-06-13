@@ -1,8 +1,8 @@
 <script lang="ts">
 	import SidebarLayout from '$lib/components/layouts/SidebarLayout.svelte';
-	import Home from './home/Home.svelte';
+	import AllFiles from './components/AllFiles.svelte';
 </script>
 
-<SidebarLayout pageTitle="Directories">
-	<Home />
+<SidebarLayout pageTitle="All Files">
+	<AllFiles />
 </SidebarLayout>

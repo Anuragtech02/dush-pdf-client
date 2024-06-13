@@ -16,26 +16,24 @@
 	}));
 </script>
 
-<div class="container mt-10">
-	<Tabs.Root bind:value={tabValue}>
-		<div class="flex w-full items-center justify-between">
-			<div>
-				<h4>Folders</h4>
-			</div>
-			<Tabs.List>
-				<Tabs.Trigger value="grid">
-					<GridIcon />
-				</Tabs.Trigger>
-				<Tabs.Trigger value="list">
-					<ListChecksIcon />
-				</Tabs.Trigger>
-			</Tabs.List>
+<Tabs.Root bind:value={tabValue}>
+	<div class="flex w-full items-center justify-between">
+		<div>
+			<h5>Folders</h5>
 		</div>
-		<Tabs.Content value="grid" class="mt-4">
-			<GridLayoutFolders {folders} />
-		</Tabs.Content>
-		<Tabs.Content value="list">
-			<TableLayoutFolders {folders} />
-		</Tabs.Content>
-	</Tabs.Root>
-</div>
+		<Tabs.List>
+			<Tabs.Trigger value="grid">
+				<GridIcon />
+			</Tabs.Trigger>
+			<Tabs.Trigger value="list">
+				<ListChecksIcon />
+			</Tabs.Trigger>
+		</Tabs.List>
+	</div>
+	<Tabs.Content value="grid" class="mt-4">
+		<GridLayoutFolders {folders} />
+	</Tabs.Content>
+	<Tabs.Content value="list">
+		<TableLayoutFolders {folders} />
+	</Tabs.Content>
+</Tabs.Root>
