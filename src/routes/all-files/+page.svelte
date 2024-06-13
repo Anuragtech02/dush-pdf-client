@@ -3,6 +3,9 @@
 	import AllFiles from './components/AllFiles.svelte';
 </script>
 
+<svelte:head>
+	<title>All Files | Dush Products</title>
+</svelte:head>
 <SidebarLayout pageTitle="All Files">
 	<AllFiles />
 </SidebarLayout>
