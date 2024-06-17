@@ -4,17 +4,36 @@
 	import Label from '$lib/components/ui/label/label.svelte';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import { cn } from '$lib/utils.js';
+	import { loginUserInternal } from '$lib/api/services-internal';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };
 
 	let isLoading = false;
-	async function onSubmit() {
-		isLoading = true;
+	let username: string = '';
+	let password: string = '';
 
-		setTimeout(() => {
-			isLoading = false;
-		}, 3000);
+	async function handleLoginCall() {
+		let isValid = true;
+		try {
+			const res = await loginUserInternal(username, password);
+		} catch (error) {
+			console.log('AUTH ERROR: ', error);
+			isValid = false;
+		}
+		return isValid;
+	}
+
+	async function onSubmit() {
+		if (isLoading) return;
+		isLoading = true;
+		const isValidCall = await handleLoginCall();
+		if (isValidCall) {
+			console.log('Login Success');
+		} else {
+			console.log('Login Failed');
+		}
+		isLoading = false;
 	}
 </script>
 
@@ -29,6 +48,7 @@
 					type="text"
 					autocapitalize="none"
 					autocomplete="username"
+					bind:value={username}
 					autocorrect="off"
 					disabled={isLoading}
 				/>
@@ -42,6 +62,7 @@
 					autocapitalize="none"
 					autocomplete="password"
 					autocorrect="off"
+					bind:value={password}
 					disabled={isLoading}
 				/>
 			</div>
