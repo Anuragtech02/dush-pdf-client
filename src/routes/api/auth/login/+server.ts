@@ -1,7 +1,7 @@
 import { loginUser } from '$lib/api/services';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
 	const requestObj = await request.json();
 	const userReq = {
 		username: requestObj.username,
@@ -25,6 +25,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	const response = new Response(JSON.stringify(res.data), {
 		status: res.status,
 		statusText: res.statusText
+	});
+
+	cookies.set('DUSH_AUTH_TOKEN', res.data.token, {
+		httpOnly: true,
+		secure: true,
+		path: '/'
 	});
 
 	return response;

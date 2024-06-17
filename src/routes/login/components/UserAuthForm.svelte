@@ -5,6 +5,7 @@
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import { cn } from '$lib/utils.js';
 	import { loginUserInternal } from '$lib/api/services-internal';
+	import { goto } from '$app/navigation';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };
@@ -30,6 +31,7 @@
 		const isValidCall = await handleLoginCall();
 		if (isValidCall) {
 			console.log('Login Success');
+			goto('/');
 		} else {
 			console.log('Login Failed');
 		}
