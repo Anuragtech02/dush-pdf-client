@@ -9,7 +9,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		id: ''
 	};
 
-	//extract id from cookies 
+	//extract id from cookies
 	const token = cookies.get(AUTH_TOKEN);
 
 	if (!token) {
@@ -22,14 +22,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	createReq.id = decoded.id;
 
-
 	if (!createReq.name) {
 		return new Response(JSON.stringify({ message: 'Directory name is required' }), {
 			status: 400
 		});
 	}
 
-	const res = await createDirectory(cookies, createReq.name, Number(createReq?.id));
+	const res = await createDirectory(cookies, createReq.name, parseInt(createReq?.id));
 
 	const response = new Response(JSON.stringify(res.data), {
 		status: res.status,

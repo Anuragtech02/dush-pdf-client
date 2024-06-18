@@ -52,8 +52,7 @@ export async function createDirectory(cookies: Cookies, name: string, id: number
 	return await API.post(
 		'/directories',
 		{
-			name,
-			id
+			data: { name, directoryCreatedBy: id }
 		},
 		{
 			headers: getAuthHeaders(cookies)
