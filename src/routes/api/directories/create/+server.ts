@@ -1,12 +1,28 @@
 import { createDirectory } from '$lib/api/services';
+import { AUTH_TOKEN } from '$lib/utils/constants';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const requestObj = await request.json();
 	const createReq = {
 		name: requestObj.name,
-		id: requestObj.id
+		id: ''
 	};
+
+	//extract id from cookies 
+	const token = cookies.get(AUTH_TOKEN);
+
+	if (!token) {
+		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+			status: 401
+		});
+	}
+
+	const decoded = JSON.parse(atob(token.split('.')[1]));
+
+	createReq.id = decoded.id;
+
+	console.log(createReq);
 
 	if (!createReq.name) {
 		return new Response(JSON.stringify({ message: 'Directory name is required' }), {
@@ -14,7 +30,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		});
 	}
 
-	const res = await createDirectory(cookies, createReq.name, createReq.id);
+	const res = await createDirectory(cookies, createReq.name, Number(createReq?.id));
 
 	const response = new Response(JSON.stringify(res.data), {
 		status: res.status,
