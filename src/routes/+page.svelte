@@ -6,24 +6,16 @@
 	import * as Sheet from '$lib/components/ui/sheet';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
-	import {  CopyIcon, LoaderCircle } from 'lucide-svelte';
-	import * as Alert from '$lib/components/ui/alert';
-	
-	
-	import * as Card from '$lib/components/ui/card';
+	import { LoaderCircle } from 'lucide-svelte';
+
 	import { createDirectoryInternal } from '$lib/api/services-internal';
+	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
+	import directoryStore from '$lib/stores/directory.store';
 
 	let isLoading: boolean = false;
 	let createOpen: boolean = false;
 	let name: string = '';
-	let showAlert: boolean = false;
 	let resDirectory: any = {};
-	let alertMessage = {
-		title: '',
-		description: ''
-	};
-
-
 
 	async function onSubmit() {
 		try {
@@ -32,38 +24,30 @@
 			const isValidCall = await createDirectoryInternal(name);
 			if (isValidCall) {
 				console.log('Directory Created');
-
-				resDirectory = {id:isValidCall.data.data.id, ...isValidCall.data.data.attributes};
-				alertMessage = {
-				title: 'Directory Created',
-				description: `Directory ${resDirectory.name} created successfully`
-			};
-				showAlert = true;
+				name = '';
+				resDirectory = { id: isValidCall.data.data.id, ...isValidCall.data.data.attributes };
+				$directoryStore.folders = [...$directoryStore.folders, resDirectory];
 				createOpen = false;
-				setTimeout(() => {
-					showAlert = false;
-
-				}, 5000);
+				toastStore.addToast(`Directory ${resDirectory.name} Created Successfully`, {
+					type: 'success'
+				});
 			} else {
 				console.log('Directory Creation Failed');
 			}
 		} catch (error) {
-			console.log("Failed to create directory");
-		}finally{
+			console.log('Failed to create directory');
+		} finally {
 			isLoading = false;
 		}
 	}
-	
 </script>
 
 <svelte:head>
 	<title>Directories | Dush Products</title>
 </svelte:head>
 
-
-
-<Sheet.Root bind:open={createOpen} >
-	<SidebarLayout pageTitle="Users">
+<Sheet.Root bind:open={createOpen}>
+	<SidebarLayout pageTitle="Directories">
 		<Home />
 		<div slot="actions">
 			<Sheet.Trigger>
@@ -91,9 +75,7 @@
 								disabled={isLoading}
 							/>
 						</div>
-						
-						
-						
+
 						<Button type="submit" disabled={isLoading}>
 							{#if isLoading}
 								<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
@@ -102,19 +84,7 @@
 						</Button>
 					</div>
 				</form>
-				
 			</Sheet.Description>
 		</Sheet.Header>
 	</Sheet.Content>
 </Sheet.Root>
-
-{#if showAlert}
-	<div class="fixed left-1/2 top-4 w-[500px] -translate-x-1/2">
-		<Alert.Root>
-			<Alert.Title>{alertMessage.title}</Alert.Title>
-			<Alert.Description>
-				{alertMessage.description}
-			</Alert.Description>
-		</Alert.Root>
-	</div>
-{/if}
