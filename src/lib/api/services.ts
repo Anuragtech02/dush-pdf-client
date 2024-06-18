@@ -60,3 +60,15 @@ export async function createDirectory(cookies: Cookies, name: string, id: number
 		}
 	);
 }
+
+export async function updateDirectory(cookies: Cookies, id: number, data: any) {
+	return await API.post(
+		'/directories/' + id,
+		{
+			data
+		},
+		{
+			headers: getAuthHeaders(cookies)
+		}
+	);
+}
