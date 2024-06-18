@@ -15,3 +15,10 @@ export const API_USER = axios.create({
 		'Content-Type': 'application/json'
 	}
 });
+
+export const API_DIRECTORY = axios.create({
+	baseURL: API_URL + '/directories',
+	headers: {
+		'Content-Type': 'application/json'
+	}
+});

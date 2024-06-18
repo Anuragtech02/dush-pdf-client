@@ -1,5 +1,5 @@
 import type { Cookies } from '@sveltejs/kit';
-import { API_AUTH, API_USER } from './config';
+import { API_AUTH, API } from './config';
 import { AUTH_TOKEN } from '$lib/utils/constants';
 
 function getAuthHeaders(cookies: Cookies) {
@@ -23,7 +23,7 @@ export async function createCustomer(
 	name: string,
 	username: string | null = null
 ) {
-	return await API_USER.post(
+	return await API.post(
 		'/generate-user',
 		{
 			username,
@@ -34,4 +34,16 @@ export async function createCustomer(
 			headers: getAuthHeaders(cookies)
 		}
 	);
+}
+
+export async function getAllDirectories(cookies: Cookies) {
+	return await API.get('/directories', {
+		headers: getAuthHeaders(cookies)
+	});
+}
+
+export async function getDirectoryByID(cookies: Cookies, id: string) {
+	return await API.get('/directories/' + id, {
+		headers: getAuthHeaders(cookies)
+	});
 }
