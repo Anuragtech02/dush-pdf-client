@@ -8,3 +8,10 @@ export const API_AUTH = axios.create({
 		'Content-Type': 'application/json'
 	}
 });
+
+export const API_USER = axios.create({
+	baseURL: API_URL + '/user',
+	headers: {
+		'Content-Type': 'application/json'
+	}
+});

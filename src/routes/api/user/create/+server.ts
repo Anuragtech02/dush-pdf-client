@@ -1,21 +1,21 @@
-import { loginUser } from '$lib/api/services';
-import { AUTH_TOKEN } from '$lib/utils/constants';
+import { createCustomer, loginUser } from '$lib/api/services';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const requestObj = await request.json();
 	const userReq = {
-		username: requestObj.username,
-		password: requestObj.password
+		expiry: requestObj.expiry,
+		name: requestObj.name,
+		username: requestObj.username || null
 	};
 
-	if (!userReq.username || !userReq.password) {
-		return new Response(JSON.stringify({ message: 'Username and password are required' }), {
+	if (!userReq.name || !userReq.expiry) {
+		return new Response(JSON.stringify({ message: 'Name and Expiry are required' }), {
 			status: 400
 		});
 	}
 
-	const res = await loginUser(userReq.username, userReq.password);
+	const res = await createCustomer(cookies, userReq.expiry, userReq.name, userReq.username);
 	const headers = new Headers();
 	if (res.headers) {
 		for (const [key, value] of Object.entries(res.headers)) {
@@ -27,12 +27,5 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		status: res.status,
 		statusText: res.statusText
 	});
-
-	cookies.set(AUTH_TOKEN, res.data.token, {
-		httpOnly: true,
-		secure: true,
-		path: '/'
-	});
-
 	return response;
 };

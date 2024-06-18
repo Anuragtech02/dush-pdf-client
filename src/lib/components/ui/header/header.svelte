@@ -14,6 +14,7 @@
 				<Avatar.Fallback>CN</Avatar.Fallback>
 			</Avatar.Root>
 		</div> -->
+		<slot name="actions" />
 	</div>
 	<div>
 		<hr />

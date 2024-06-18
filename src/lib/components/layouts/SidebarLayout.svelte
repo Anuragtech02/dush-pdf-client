@@ -3,12 +3,14 @@
 	import BrandLogo from '../ui/brandLogo/BrandLogo.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
 	export let pageTitle: string = 'Home';
 
 	const links = [
 		{ name: 'Directories', href: '/' },
-		{ name: 'All Files', href: '/all-files' }
+		{ name: 'All Files', href: '/all-files' },
+		{ name: 'Customers', href: '/customers' }
 	];
 </script>
 
@@ -37,7 +39,19 @@
 				</nav>
 			</div>
 		</div>
-		<div class="flex w-full items-center justify-center gap-3 bg-slate-300 py-3">
+		<div
+			class="flex w-full items-center justify-center gap-3 bg-slate-300 py-3"
+			on:click={() => {
+				goto('/login');
+			}}
+			on:keydown={(e) => {
+				if (e.key === 'Enter') {
+					goto('/login');
+				}
+			}}
+			role="button"
+			tabindex="0"
+		>
 			<Avatar.Root>
 				<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
 				<Avatar.Fallback>CN</Avatar.Fallback>
@@ -46,7 +60,11 @@
 		</div>
 	</aside>
 	<main class="container h-full w-[calc(100%-var(--width-sidebar))]">
-		<Header {pageTitle} />
+		<Header {pageTitle}>
+			<div slot="actions">
+				<slot name="actions" />
+			</div>
+		</Header>
 		<section class="mt-10 h-[calc(100vh-var(--height-header))] overflow-y-auto">
 			<slot />
 		</section>
