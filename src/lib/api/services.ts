@@ -47,3 +47,16 @@ export async function getDirectoryByID(cookies: Cookies, id: string) {
 		headers: getAuthHeaders(cookies)
 	});
 }
+
+export async function createDirectory(cookies: Cookies, name: string, id: number) {
+	return await API.post(
+		'/directories',
+		{
+			name,
+			id
+		},
+		{
+			headers: getAuthHeaders(cookies)
+		}
+	);
+}
