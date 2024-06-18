@@ -1,4 +1,4 @@
-import { API_AUTH, API_USER } from './config-internal';
+import { API_AUTH, API_DIRECTORY, API_USER } from './config-internal';
 
 export async function loginUserInternal(username: string, password: string) {
 	return await API_AUTH.post('/login', {
@@ -16,4 +16,16 @@ export async function createCustomerInternal(
 		name,
 		expiry
 	});
+}
+
+export async function logoutUserInternal() {
+	return await API_AUTH.post('/logout');
+}
+
+export async function getAllDirectoriesInternal() {
+	return await API_DIRECTORY.get('/');
+}
+
+export async function getDirectoryByIDInternal(id: string) {
+	return await API_DIRECTORY.get('/' + id);
 }
