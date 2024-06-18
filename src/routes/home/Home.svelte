@@ -5,15 +5,30 @@
 	import ListChecksIcon from 'lucide-svelte/icons/list-checks';
 	import GridLayoutFolders from './components/GridLayoutFolders.svelte';
 	import TableLayoutFolders from './components/TableLayoutFolders.svelte';
-
+	import { getAllDirectoriesInternal } from '$lib/api/services-internal';
+	import { onMount } from 'svelte';
+	
 	let tabValue: string = 'grid';
+	let folders:any[] = [] ;
 
-	const folders = new Array(5).fill(null).map((_, index) => ({
-		id: index.toString(),
-		name: `Dush Product ${index + 1}`,
-		parentId: '1',
-		createdAt: new Date().toISOString()
-	}));
+	onMount(async () => {
+		const res  = await getAllDirectoriesInternal();
+
+		if(res.status !== 200){
+			return
+		}
+		const tempFolders:any[] = [] 
+		res.data.data.forEach((folder:any) => {
+			tempFolders.push({
+				id: folder.id,
+				...folder.attributes
+			})
+		})
+		folders = tempFolders
+	});
+
+
+	
 </script>
 
 <Tabs.Root bind:value={tabValue}>
