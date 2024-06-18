@@ -7,26 +7,43 @@
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import {  CopyIcon, LoaderCircle } from 'lucide-svelte';
+	import * as Alert from '$lib/components/ui/alert';
 	
 	
 	import * as Card from '$lib/components/ui/card';
 	import { createDirectoryInternal } from '$lib/api/services-internal';
 
 	let isLoading: boolean = false;
-	let showSuccess = false;
+	let createOpen: boolean = false;
 	let name: string = '';
+	let showAlert: boolean = false;
 	let resDirectory: any = {};
+	let alertMessage = {
+		title: '',
+		description: ''
+	};
+
 
 
 	async function onSubmit() {
 		try {
-			
 			if (isLoading) return;
 			isLoading = true;
 			const isValidCall = await createDirectoryInternal(name);
 			if (isValidCall) {
 				console.log('Directory Created');
-				showSuccess = true;
+
+				resDirectory = {id:isValidCall.data.data.id, ...isValidCall.data.data.attributes};
+				alertMessage = {
+				title: 'Directory Created',
+				description: `Directory ${resDirectory.name} created successfully`
+			};
+				showAlert = true;
+				createOpen = false;
+				setTimeout(() => {
+					showAlert = false;
+
+				}, 5000);
 			} else {
 				console.log('Directory Creation Failed');
 			}
@@ -45,7 +62,7 @@
 
 
 
-<Sheet.Root>
+<Sheet.Root bind:open={createOpen} >
 	<SidebarLayout pageTitle="Users">
 		<Home />
 		<div slot="actions">
@@ -85,22 +102,19 @@
 						</Button>
 					</div>
 				</form>
-				{#if showSuccess && resDirectory?.username}
-					<div><hr /></div>
-					<Card.Root class="mt-6 w-full border border-green-600">
-						<Card.Title class="p-4">
-							<h3 class="text-green-600">
-								{resDirectory?.name}
-							</h3>
-						</Card.Title>
-						<Card.Content class="flex items-center justify-start !p-4">
-							<div class="flex w-full flex-col items-center justify-center gap-4">
-								<p>Success!</p>
-							</div>
-						</Card.Content>
-					</Card.Root>
-				{/if}
+				
 			</Sheet.Description>
 		</Sheet.Header>
 	</Sheet.Content>
 </Sheet.Root>
+
+{#if showAlert}
+	<div class="fixed left-1/2 top-4 w-[500px] -translate-x-1/2">
+		<Alert.Root>
+			<Alert.Title>{alertMessage.title}</Alert.Title>
+			<Alert.Description>
+				{alertMessage.description}
+			</Alert.Description>
+		</Alert.Root>
+	</div>
+{/if}
