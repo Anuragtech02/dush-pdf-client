@@ -22,7 +22,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	createReq.id = decoded.id;
 
-	console.log(createReq);
 
 	if (!createReq.name) {
 		return new Response(JSON.stringify({ message: 'Directory name is required' }), {
