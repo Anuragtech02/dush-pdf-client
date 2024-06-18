@@ -30,10 +30,10 @@ export async function getDirectoryByIDInternal(id: string) {
 	return await API_DIRECTORY.get('/' + id);
 }
 
-export async function createDirectoryInternal(name: string, id: number) {
+export async function createDirectoryInternal(name: string ) {
 	return await API_DIRECTORY.post('/create', {
 		name,
-		id
+		
 	});
 }
 
