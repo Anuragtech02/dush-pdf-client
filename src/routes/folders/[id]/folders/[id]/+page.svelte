@@ -1,7 +1,13 @@
+<script>
+	import SidebarLayout from "$lib/components/layouts/SidebarLayout.svelte";
 
-<main>
-    <h1>Helllo from level 2</h1>
-</main>
+</script>
+
+<SidebarLayout pageTitle="Level 2">
+    <main>
+        <h1>Helllo from level 2</h1>
+    </main>
+</SidebarLayout>
 
 <style>
     main {
