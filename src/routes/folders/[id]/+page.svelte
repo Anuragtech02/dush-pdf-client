@@ -3,15 +3,16 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import GridIcon from 'lucide-svelte/icons/layout-grid';
 	import ListChecksIcon from 'lucide-svelte/icons/list-checks';
-	import GridLayoutFolders from '../components/GridLayoutFolders.svelte';
-	import TableLayoutFolders from '../components/TableLayoutFolders.svelte';
+	import GridLayoutFiles from '../components/GridLayoutFiles.svelte';
+	import TableLayoutFiles from '../components/TableLayoutFiles.svelte';
 	import SidebarLayout from '$lib/components/layouts/SidebarLayout.svelte';
 	import { onMount } from 'svelte';
 	import { getDirectoryByIDInternal } from '$lib/api/services-internal';
 	import { page } from '$app/stores';
 
 	let tabValue: string = 'grid';
-	let folders: any = [];
+
+	let products: any = [];
 
 	const directoryId = $page.params.id;
 
@@ -22,15 +23,23 @@
 			return;
 		}
 
-		const tempFolders: any[] = [];
-		res.data.data.forEach((folder: any) => {
-			tempFolders.push({
-				id: folder.id,
-				...folder.attributes
+		let tempFolders: any;
+
+		tempFolders = {
+			id: res.data.id,
+			...res.data.data.attributes
+		};
+
+		const tempProducts: any = [];
+
+		tempFolders.products.data.forEach((product: any) => {
+			tempProducts.push({
+				id: product.id,
+				...product.attributes
 			});
 		});
 
-		folders = tempFolders;
+		products = tempProducts;
 	};
 
 	onMount(() => {
@@ -42,7 +51,7 @@
 	<Tabs.Root bind:value={tabValue}>
 		<div class="flex w-full items-center justify-between">
 			<div>
-				<h5>Folders</h5>
+				<h5>Files</h5>
 			</div>
 			<Tabs.List>
 				<Tabs.Trigger value="grid">
@@ -54,10 +63,10 @@
 			</Tabs.List>
 		</div>
 		<Tabs.Content value="grid" class="mt-4">
-			<GridLayoutFolders {folders} />
+			<GridLayoutFiles folders={products} />
 		</Tabs.Content>
 		<Tabs.Content value="list">
-			<TableLayoutFolders {folders} />
+			<TableLayoutFiles folders={products} />
 		</Tabs.Content>
 	</Tabs.Root>
 </SidebarLayout>
