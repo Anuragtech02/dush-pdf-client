@@ -4,8 +4,9 @@
 	import SearchIcon from 'lucide-svelte/icons/search';
 	import { onMount } from 'svelte';
 	import * as Table from '$lib/components/ui/table';
+	import productStore from '$lib/stores/product.store';
 
-	let allFiles: any = [];
+	$productStore.files = [];
 
 	const getAllFiles = async () => {
 		const res = await getAllFilesInternal();
@@ -18,10 +19,8 @@
 					...file.attributes
 				});
 			});
-			allFiles = tempFiles;
+			$productStore.files = tempFiles;
 		}
-
-		console.log(allFiles);
 	};
 
 	onMount(() => {
@@ -48,7 +47,7 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#each allFiles as file}
+				{#each $productStore.files as file}
 					<Table.Row>
 						<Table.Cell>{file.name}</Table.Cell>
 						<Table.Cell>{file.createdAt}</Table.Cell>
