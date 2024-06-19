@@ -68,3 +68,7 @@ export async function createProductInternal(fileId: string, name: string) {
 		name
 	});
 }
+
+export async function getAllFilesInternal() {
+	return await API_PRODUCTS.get('/');
+}

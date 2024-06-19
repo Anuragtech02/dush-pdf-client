@@ -112,3 +112,9 @@ export async function createProduct(
 		}
 	);
 }
+
+export async function getAllFiles(cookies: Cookies) {
+	return await API.get('/products', {
+		headers: getAuthHeaders(cookies)
+	});
+}
