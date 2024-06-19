@@ -82,9 +82,6 @@
 </div>
 
 <AlertDialog.Root open={Boolean(idToDelete)}>
-	<AlertDialog.Trigger asChild let:builder>
-		<Button builders={[builder]} variant="outline">Show Dialog</Button>
-	</AlertDialog.Trigger>
 	<AlertDialog.Content>
 		<AlertDialog.Header>
 			<AlertDialog.Title>Are you sure to delete folder?</AlertDialog.Title>
