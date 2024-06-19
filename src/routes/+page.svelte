@@ -6,47 +6,48 @@
 	import * as Sheet from '$lib/components/ui/sheet';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
-	import {  CopyIcon, LoaderCircle } from 'lucide-svelte';
-	
-	
-	import * as Card from '$lib/components/ui/card';
+	import { LoaderCircle } from 'lucide-svelte';
+
 	import { createDirectoryInternal } from '$lib/api/services-internal';
+	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
+	import directoryStore from '$lib/stores/directory.store';
 
 	let isLoading: boolean = false;
-	let showSuccess = false;
+	let createOpen: boolean = false;
 	let name: string = '';
 	let resDirectory: any = {};
 
-
 	async function onSubmit() {
 		try {
-			
 			if (isLoading) return;
 			isLoading = true;
 			const isValidCall = await createDirectoryInternal(name);
 			if (isValidCall) {
 				console.log('Directory Created');
-				showSuccess = true;
+				name = '';
+				resDirectory = { id: isValidCall.data.data.id, ...isValidCall.data.data.attributes };
+				$directoryStore.folders = [...$directoryStore.folders, resDirectory];
+				createOpen = false;
+				toastStore.addToast(`Directory ${resDirectory.name} Created Successfully`, {
+					type: 'success'
+				});
 			} else {
 				console.log('Directory Creation Failed');
 			}
 		} catch (error) {
-			console.log("Failed to create directory");
-		}finally{
+			console.log('Failed to create directory');
+		} finally {
 			isLoading = false;
 		}
 	}
-	
 </script>
 
 <svelte:head>
 	<title>Directories | Dush Products</title>
 </svelte:head>
 
-
-
-<Sheet.Root>
-	<SidebarLayout pageTitle="Users">
+<Sheet.Root bind:open={createOpen}>
+	<SidebarLayout pageTitle="Directories">
 		<Home />
 		<div slot="actions">
 			<Sheet.Trigger>
@@ -74,9 +75,7 @@
 								disabled={isLoading}
 							/>
 						</div>
-						
-						
-						
+
 						<Button type="submit" disabled={isLoading}>
 							{#if isLoading}
 								<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
@@ -85,21 +84,6 @@
 						</Button>
 					</div>
 				</form>
-				{#if showSuccess && resDirectory?.username}
-					<div><hr /></div>
-					<Card.Root class="mt-6 w-full border border-green-600">
-						<Card.Title class="p-4">
-							<h3 class="text-green-600">
-								{resDirectory?.name}
-							</h3>
-						</Card.Title>
-						<Card.Content class="flex items-center justify-start !p-4">
-							<div class="flex w-full flex-col items-center justify-center gap-4">
-								<p>Success!</p>
-							</div>
-						</Card.Content>
-					</Card.Root>
-				{/if}
 			</Sheet.Description>
 		</Sheet.Header>
 	</Sheet.Content>

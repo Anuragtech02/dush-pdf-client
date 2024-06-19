@@ -7,28 +7,26 @@
 	import TableLayoutFolders from './components/TableLayoutFolders.svelte';
 	import { getAllDirectoriesInternal } from '$lib/api/services-internal';
 	import { onMount } from 'svelte';
-	
+	import directoryStore from '$lib/stores/directory.store';
+
 	let tabValue: string = 'grid';
-	let folders:any[] = [] ;
+	$directoryStore.folders = [];
 
 	onMount(async () => {
-		const res  = await getAllDirectoriesInternal();
+		const res = await getAllDirectoriesInternal();
 
-		if(res.status !== 200){
-			return
+		if (res.status !== 200) {
+			return;
 		}
-		const tempFolders:any[] = [] 
-		res.data.data.forEach((folder:any) => {
+		const tempFolders: any[] = [];
+		res.data.data.forEach((folder: any) => {
 			tempFolders.push({
 				id: folder.id,
 				...folder.attributes
-			})
-		})
-		folders = tempFolders
+			});
+		});
+		$directoryStore.folders = tempFolders;
 	});
-
-
-	
 </script>
 
 <Tabs.Root bind:value={tabValue}>
@@ -46,9 +44,9 @@
 		</Tabs.List>
 	</div>
 	<Tabs.Content value="grid" class="mt-4">
-		<GridLayoutFolders {folders} />
+		<GridLayoutFolders folders={$directoryStore.folders} />
 	</Tabs.Content>
 	<Tabs.Content value="list">
-		<TableLayoutFolders {folders} />
+		<TableLayoutFolders folders={$directoryStore.folders} />
 	</Tabs.Content>
 </Tabs.Root>

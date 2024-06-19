@@ -1,9 +1,10 @@
 <script>
-	import Header from '$lib/components/ui/header/header.svelte';
+	import ToastContainer from '$lib/components/ui/toast/ToastContainer.svelte';
 	import '../app.css';
 </script>
 
 <slot />
+<ToastContainer />
 
 <style>
 	:global(:root) {
