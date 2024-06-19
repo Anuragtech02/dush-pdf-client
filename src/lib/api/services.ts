@@ -71,3 +71,9 @@ export async function updateDirectory(cookies: Cookies, id: number, data: any) {
 		}
 	);
 }
+
+export async function deleteDirectory(cookies: Cookies, id: number) {
+	return await API.delete('/directories/' + id, {
+		headers: getAuthHeaders(cookies)
+	});
+}

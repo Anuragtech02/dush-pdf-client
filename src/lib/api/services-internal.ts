@@ -30,10 +30,9 @@ export async function getDirectoryByIDInternal(id: string) {
 	return await API_DIRECTORY.get('/' + id);
 }
 
-export async function createDirectoryInternal(name: string ) {
+export async function createDirectoryInternal(name: string) {
 	return await API_DIRECTORY.post('/create', {
-		name,
-		
+		name
 	});
 }
 
@@ -41,4 +40,12 @@ export async function updateDirectoryInternal(id: number, data: any) {
 	return await API_DIRECTORY.post('/update' + id, {
 		data
 	});
+}
+
+export async function deleteDirectoryInternal(id: number) {
+	return await API_DIRECTORY.post('/update' + id);
+}
+
+export async function shareDirectoryToId(userId: number) {
+	return await updateDirectoryInternal(userId, { sharedTo: [userId] });
 }
