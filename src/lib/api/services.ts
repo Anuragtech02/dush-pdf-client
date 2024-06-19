@@ -95,3 +95,20 @@ export async function uploadFile(cookies: Cookies, formData: FormData) {
 		headers: { ...getAuthHeaders(cookies), 'Content-Type': 'multipart/form-data' }
 	});
 }
+
+export async function createProduct(
+	cookies: Cookies,
+	fileId: string,
+	name: string,
+	productCreatedBy: number
+) {
+	return await API.post(
+		'/products',
+		{
+			data: { pdf: fileId, name, productCreatedBy, published: new Date() }
+		},
+		{
+			headers: getAuthHeaders(cookies)
+		}
+	);
+}

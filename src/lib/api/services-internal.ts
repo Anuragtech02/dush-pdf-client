@@ -61,3 +61,10 @@ export async function uploadFileInternal(formData: FormData) {
 		}
 	});
 }
+
+export async function createProductInternal(fileId: string, name: string) {
+	return await API_PRODUCTS.post('/create', {
+		fileId,
+		name
+	});
+}
