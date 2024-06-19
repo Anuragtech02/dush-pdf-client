@@ -7,7 +7,7 @@
 	import productStore from '$lib/stores/product.store';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
-	import { TrashIcon } from 'lucide-svelte';
+	import { LoaderCircle, TrashIcon } from 'lucide-svelte';
 	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 
@@ -109,22 +109,16 @@
 						</Table.Cell>
 						<Table.Cell>{new Date(file.createdAt).toLocaleDateString()}</Table.Cell>
 						<Table.Cell class="flex justify-end text-right">
-							<Popover.Root>
-								<Popover.Trigger asChild let:builder>
-									<Button builders={[builder]} variant="secondary">
-										<TrashIcon />
-									</Button>
-								</Popover.Trigger>
-								<Popover.Content>
-									<div class="flex items-center justify-center gap-4">
-										<p>Sure to remove the user?</p>
-										<div class="flex items-center justify-center gap-2">
-											<Button variant="secondary">No</Button>
-											<Button on:click={() => (idToDelete = file.id)}>Yes</Button>
-										</div>
-									</div>
-								</Popover.Content>
-							</Popover.Root>
+							<Button
+								on:click={() => (idToDelete = file.id)}
+								variant="secondary"
+								disabled={loading}
+							>
+								{#if loading}
+									<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+								{/if}
+								<TrashIcon />
+							</Button>
 						</Table.Cell>
 					</Table.Row>
 				{/each}
