@@ -9,6 +9,7 @@
 	import { LoaderCircle } from 'lucide-svelte';
 	import { createProductInternal, uploadFileInternal } from '$lib/api/services-internal';
 	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
+	import productStore from '$lib/stores/product.store';
 
 	let isLoading: boolean = false;
 	let createOpen: boolean = false;
@@ -25,6 +26,17 @@
 			const uploadedFile = data[0];
 
 			const createProdRes = await createProductInternal(uploadedFile.id, name);
+			$productStore = [
+				...$productStore,
+				{
+					fileUrl: uploadedFile.url,
+					id: createProdRes.data.data.id,
+					createdAt: createProdRes.data.data.attributes.createdAt,
+					name: createProdRes.data.data.attributes.name,
+					updatedAt: createProdRes.data.data.attributes.updatedAt,
+					publishedAt: createProdRes.data.data.attributes.publishedAt
+				}
+			];
 
 			isValid = true;
 		} catch (error) {

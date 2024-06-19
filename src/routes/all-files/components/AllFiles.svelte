@@ -6,8 +6,6 @@
 	import * as Table from '$lib/components/ui/table';
 	import productStore from '$lib/stores/product.store';
 
-	$productStore.files = [];
-
 	const getAllFiles = async () => {
 		const res = await getAllFilesInternal();
 
@@ -16,10 +14,14 @@
 			res.data.data.forEach((file: any) => {
 				tempFiles.push({
 					id: file.id,
-					...file.attributes
+					name: file.attributes.name,
+					fileUrl: file.attributes.fileUrl || '',
+					createdAt: file.attributes.createdAt,
+					publishedAt: file.attributes.publishedAt,
+					updatedAt: file.attributes.updatedAt
 				});
 			});
-			$productStore.files = tempFiles;
+			$productStore = tempFiles;
 		}
 	};
 
@@ -47,10 +49,10 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#each $productStore.files as file}
+				{#each $productStore as file}
 					<Table.Row>
 						<Table.Cell>{file.name}</Table.Cell>
-						<Table.Cell>{file.createdAt}</Table.Cell>
+						<Table.Cell>{new Date(file.createdAt).toLocaleDateString()}</Table.Cell>
 					</Table.Row>
 				{/each}
 			</Table.Body>

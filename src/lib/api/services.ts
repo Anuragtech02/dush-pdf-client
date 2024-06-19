@@ -114,7 +114,7 @@ export async function createProduct(
 }
 
 export async function getAllFiles(cookies: Cookies) {
-	return await API.get('/products', {
+	return await API.get('/products?populate=*', {
 		headers: getAuthHeaders(cookies)
 	});
 }
