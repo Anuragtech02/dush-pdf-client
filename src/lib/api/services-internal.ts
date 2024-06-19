@@ -37,13 +37,13 @@ export async function createDirectoryInternal(name: string) {
 }
 
 export async function updateDirectoryInternal(id: number, data: any) {
-	return await API_DIRECTORY.post('/update' + id, {
+	return await API_DIRECTORY.post('/update/' + id, {
 		data
 	});
 }
 
 export async function deleteDirectoryInternal(id: number) {
-	return await API_DIRECTORY.post('/update' + id);
+	return await API_DIRECTORY.delete('/delete/' + id);
 }
 
 export async function shareDirectoryToId(userId: number) {

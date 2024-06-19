@@ -1,7 +1,7 @@
 import { deleteDirectory } from '$lib/api/services';
 import type { RequestHandler } from './$types';
 
-export const PUT: RequestHandler = async ({ cookies, params }) => {
+export const DELETE: RequestHandler = async ({ cookies, params }) => {
 	const { id } = params;
 
 	if (!id) {

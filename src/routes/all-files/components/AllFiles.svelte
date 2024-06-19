@@ -21,7 +21,7 @@
 				tempFiles.push({
 					id: file.id,
 					name: file.attributes.name,
-					fileUrl: file.attributes.fileUrl || '',
+					fileUrl: file.attributes.pdf.data.attributes.url || '',
 					createdAt: file.attributes.createdAt,
 					publishedAt: file.attributes.publishedAt,
 					updatedAt: file.attributes.updatedAt
@@ -82,7 +82,7 @@
 								rel="noreferrer;noopener"
 								class="... max-w-[100px] truncate text-primary underline md:max-w-[400px]"
 							>
-								{file.name}
+								{file.name}.pdf
 							</a>
 						</Table.Cell>
 						<Table.Cell>{new Date(file.createdAt).toLocaleDateString()}</Table.Cell>

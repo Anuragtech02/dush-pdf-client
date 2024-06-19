@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { deleteDirectoryInternal } from '$lib/api/services-internal';
 	import * as Table from '$lib/components/ui/table';
 
 	export let folders: Array<any> = [];
