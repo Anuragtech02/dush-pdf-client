@@ -77,3 +77,9 @@ export async function deleteDirectory(cookies: Cookies, id: number) {
 		headers: getAuthHeaders(cookies)
 	});
 }
+
+export async function getUserByID(cookies: Cookies, id: number) {
+	return await API.get('/dush-users/' + id, {
+		headers: getAuthHeaders(cookies)
+	});
+}
