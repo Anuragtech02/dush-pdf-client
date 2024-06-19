@@ -61,3 +61,7 @@ export async function uploadFileInternal(formData: FormData) {
 		}
 	});
 }
+
+export async function getAllFilesInternal() {
+	return await API_PRODUCTS.get('/');
+}
