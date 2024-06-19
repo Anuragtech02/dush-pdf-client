@@ -83,3 +83,9 @@ export async function getUserByID(cookies: Cookies, id: number) {
 		headers: getAuthHeaders(cookies)
 	});
 }
+
+export async function getAllUsers(cookies: Cookies) {
+	return await API.get('/dush-users', {
+		headers: getAuthHeaders(cookies)
+	});
+}

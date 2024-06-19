@@ -5,6 +5,8 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Alert from '$lib/components/ui/alert';
 	import customerStore, { type ICustomer } from '$lib/stores/customers.store';
+	import { onMount } from 'svelte';
+	import { getAllUsersInternal } from '$lib/api/services-internal';
 
 	let loading: boolean = false;
 	let showAlert: boolean = false;
@@ -20,7 +22,25 @@
 		role: 'Customer'
 	}));
 
-	customerStore.set(users);
+	async function fetchAllUsers() {
+		try {
+			const res = await getAllUsersInternal();
+
+			let users = res.data?.data?.map((item: any, i: number) => ({
+				name: item.attributes.name,
+				username: item.attributes.username,
+				expiry: item.attributes.expiry,
+				role: item.attributes.role
+			}));
+			customerStore.set(users);
+		} catch (error) {
+			console.log('ERROR FETCHING ALL USERS', error);
+		}
+	}
+
+	onMount(() => {
+		fetchAllUsers();
+	});
 
 	function handleDelete(user: ICustomer) {
 		console.log('Deleting user', user.username);
@@ -44,7 +64,7 @@
 	<Table.Root>
 		<Table.Header>
 			<Table.Row>
-				<Table.Head class="w-[100px]">Name</Table.Head>
+				<Table.Head class="w-[200px]">Name</Table.Head>
 				<Table.Head class="">Username</Table.Head>
 				<Table.Head class="">Expiry</Table.Head>
 				<Table.Head class="text-right">Actions</Table.Head>

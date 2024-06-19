@@ -49,3 +49,7 @@ export async function deleteDirectoryInternal(id: number) {
 export async function shareDirectoryToId(userId: number) {
 	return await updateDirectoryInternal(userId, { sharedTo: [userId] });
 }
+
+export async function getAllUsersInternal() {
+	return await API_USER.get('/');
+}
