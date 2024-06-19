@@ -81,7 +81,7 @@
 				<slot name="actions" />
 			</div>
 		</Header>
-		<section class="mt-10 h-[calc(100vh-var(--height-header))] overflow-y-auto">
+		<section class="mt-10 h-[calc(100vh-var(--height-header)-100px)] overflow-y-auto">
 			<slot />
 		</section>
 	</main>

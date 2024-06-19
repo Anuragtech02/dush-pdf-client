@@ -12,10 +12,10 @@
 	}
 </script>
 
-<div class="rounded-md border border-gray-200">
+<div class="relative max-h-[600px] overflow-y-auto rounded-md border border-gray-200">
 	<Table.Root>
 		<Table.Header>
-			<Table.Row>
+			<Table.Row class="sticky top-0">
 				<Table.Head class="w-[100px]">ID</Table.Head>
 				<Table.Head class="">Name</Table.Head>
 				<Table.Head class="">Created</Table.Head>
