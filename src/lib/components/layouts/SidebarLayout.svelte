@@ -4,6 +4,8 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { logoutUserInternal } from '$lib/api/services-internal';
+	import { toastStore } from '../ui/toast/toastMessage.store';
 
 	export let pageTitle: string = 'Home';
 
@@ -12,6 +14,20 @@
 		{ name: 'All Files', href: '/all-files' },
 		{ name: 'Customers', href: '/customers' }
 	];
+
+	async function doUserLogout() {
+		try {
+			const res = await logoutUserInternal();
+			goto('/login');
+		} catch (error) {
+			console.log('LOGOUT ERROR: ', error);
+			toastStore.addToast('Failed to logout', { type: 'error' });
+		}
+	}
+
+	function handleClickLogout() {
+		doUserLogout();
+	}
 </script>
 
 <section class="h-screenn flex items-start justify-between">
@@ -42,11 +58,11 @@
 		<div
 			class="flex w-full items-center justify-center gap-3 bg-slate-300 py-3"
 			on:click={() => {
-				goto('/login');
+				handleClickLogout();
 			}}
 			on:keydown={(e) => {
 				if (e.key === 'Enter') {
-					goto('/login');
+					handleClickLogout();
 				}
 			}}
 			role="button"

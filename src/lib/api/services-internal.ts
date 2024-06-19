@@ -1,4 +1,4 @@
-import { API_AUTH, API_DIRECTORY, API_USER } from './config-internal';
+import { API_AUTH, API_DIRECTORY, API_PRODUCTS, API_USER } from './config-internal';
 
 export async function loginUserInternal(username: string, password: string) {
 	return await API_AUTH.post('/login', {
@@ -52,4 +52,12 @@ export async function shareDirectoryToId(userId: number) {
 
 export async function getAllUsersInternal() {
 	return await API_USER.get('/');
+}
+
+export async function uploadFileInternal(formData: FormData) {
+	return await API_PRODUCTS.post('/upload', formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
+	});
 }

@@ -16,12 +16,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 
 	const res = await createCustomer(cookies, userReq.expiry, userReq.name, userReq.username);
-	const headers = new Headers();
-	if (res.headers) {
-		for (const [key, value] of Object.entries(res.headers)) {
-			headers.set(key, value);
-		}
-	}
 
 	const response = new Response(JSON.stringify(res.data), {
 		status: res.status,

@@ -15,13 +15,6 @@
 		description: ''
 	};
 
-	let users = new Array(10).fill(null).map((item, i) => ({
-		name: `Test ${i + 1}`,
-		username: `test${i + 1}`,
-		expiry: '2022-12-31',
-		role: 'Customer'
-	}));
-
 	async function fetchAllUsers() {
 		try {
 			const res = await getAllUsersInternal();
@@ -30,6 +23,7 @@
 				name: item.attributes.name,
 				username: item.attributes.username,
 				expiry: item.attributes.expiry,
+				createdAt: item.attributes.createdAt,
 				role: item.attributes.role
 			}));
 			customerStore.set(users);
@@ -66,6 +60,7 @@
 			<Table.Row>
 				<Table.Head class="w-[200px]">Name</Table.Head>
 				<Table.Head class="">Username</Table.Head>
+				<Table.Head class="">Created</Table.Head>
 				<Table.Head class="">Expiry</Table.Head>
 				<Table.Head class="text-right">Actions</Table.Head>
 			</Table.Row>
@@ -75,7 +70,8 @@
 				<Table.Row>
 					<Table.Cell>{user.name}</Table.Cell>
 					<Table.Cell>{user.username}</Table.Cell>
-					<Table.Cell>{user.expiry}</Table.Cell>
+					<Table.Cell>{new Date(user.createdAt).toLocaleDateString()}</Table.Cell>
+					<Table.Cell>{new Date(user.expiry).toLocaleDateString()}</Table.Cell>
 					<Table.Cell class="flex justify-end text-right">
 						<Popover.Root>
 							<Popover.Trigger asChild let:builder>

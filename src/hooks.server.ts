@@ -4,7 +4,7 @@ import { redirect } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	if (event.request.url.endsWith('/login')) {
+	if (event.request.url.endsWith('login')) {
 		return await resolve(event);
 	}
 	const dushAuth = event.cookies.get(AUTH_TOKEN);

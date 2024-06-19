@@ -8,6 +8,7 @@ export interface ICustomer {
 	name: string;
 	username: string;
 	expiry: string;
+	createdAt: string;
 }
 
 const customerStore = writable<ICustomer[]>([]);

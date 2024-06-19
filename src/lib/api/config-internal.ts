@@ -22,3 +22,10 @@ export const API_DIRECTORY = axios.create({
 		'Content-Type': 'application/json'
 	}
 });
+
+export const API_PRODUCTS = axios.create({
+	baseURL: API_URL + '/products',
+	headers: {
+		'Content-Type': 'application/json'
+	}
+});
