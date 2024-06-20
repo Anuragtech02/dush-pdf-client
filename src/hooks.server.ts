@@ -16,6 +16,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const { isAuthorized, user } = await authMiddleware(event.cookies);
 
 	if (!isAuthorized) {
+		console.log('Unauthorized', user);
 		return redirect(301, '/login');
 	}
 

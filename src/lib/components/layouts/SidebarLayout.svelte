@@ -23,7 +23,7 @@
 
 	let links: Array<(typeof AllLinks)[0]> = [];
 
-	user.attributes.dush_roles.data.forEach((role: any) => {
+	user?.attributes?.dush_roles.data.forEach((role: any) => {
 		let permission = role.attributes.permission;
 		AllLinks.forEach((link) => {
 			if (link.requiredPermissions.includes(permission)) {
