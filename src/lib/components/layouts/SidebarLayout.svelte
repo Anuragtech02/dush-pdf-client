@@ -6,14 +6,31 @@
 	import { goto } from '$app/navigation';
 	import { logoutUserInternal } from '$lib/api/services-internal';
 	import { toastStore } from '../ui/toast/toastMessage.store';
+	import { EPermissions } from '$lib/utils/constants';
 
 	export let pageTitle: string = 'Home';
+	export let user: any;
 
-	const links = [
-		{ name: 'Directories', href: '/' },
-		{ name: 'All Files', href: '/all-files' },
-		{ name: 'Customers', href: '/customers' }
+	const AllLinks = [
+		{ name: 'Directories', href: '/', requiredPermissions: [EPermissions.READ] },
+		{
+			name: 'All Files',
+			href: '/all-files',
+			requiredPermissions: [EPermissions.CREATE, EPermissions.MANAGE]
+		},
+		{ name: 'Customers', href: '/customers', requiredPermissions: [EPermissions.MANAGE] }
 	];
+
+	let links: Array<(typeof AllLinks)[0]> = [];
+
+	user.attributes.dush_roles.data.forEach((role: any) => {
+		let permission = role.attributes.permission;
+		AllLinks.forEach((link) => {
+			if (link.requiredPermissions.includes(permission)) {
+				links = [...links, link];
+			}
+		});
+	});
 
 	async function doUserLogout() {
 		try {

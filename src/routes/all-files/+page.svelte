@@ -10,6 +10,9 @@
 	import { createProductInternal, uploadFileInternal } from '$lib/api/services-internal';
 	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
 	import productStore from '$lib/stores/product.store';
+	import type { LayoutServerLoad } from '../$types';
+
+	export let data: LayoutServerLoad;
 
 	let isLoading: boolean = false;
 	let createOpen: boolean = false;
@@ -74,7 +77,7 @@
 </svelte:head>
 
 <Sheet.Root bind:open={createOpen}>
-	<SidebarLayout pageTitle="All Files">
+	<SidebarLayout pageTitle="All Files" user={data.user}>
 		<AllFiles />
 		<div slot="actions">
 			<Sheet.Trigger>

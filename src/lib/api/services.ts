@@ -79,7 +79,7 @@ export async function deleteDirectory(cookies: Cookies, id: number) {
 }
 
 export async function getUserByID(cookies: Cookies, id: number) {
-	return await API.get('/dush-users/' + id, {
+	return await API.get('/dush-users/' + id + '?populate=*', {
 		headers: getAuthHeaders(cookies)
 	});
 }

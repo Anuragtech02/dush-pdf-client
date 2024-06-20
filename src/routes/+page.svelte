@@ -11,6 +11,9 @@
 	import { createDirectoryInternal } from '$lib/api/services-internal';
 	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
 	import directoryStore from '$lib/stores/directory.store';
+	import type { LayoutServerLoad } from './$types';
+
+	export let data: LayoutServerLoad;
 
 	let isLoading: boolean = false;
 	let createOpen: boolean = false;
@@ -47,7 +50,7 @@
 </svelte:head>
 
 <Sheet.Root bind:open={createOpen}>
-	<SidebarLayout pageTitle="Directories">
+	<SidebarLayout pageTitle="Directories" user={data.user}>
 		<Home />
 		<div slot="actions">
 			<Sheet.Trigger>

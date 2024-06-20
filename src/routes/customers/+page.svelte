@@ -22,6 +22,9 @@
 	import { createCustomerInternal } from '$lib/api/services-internal';
 	import * as Card from '$lib/components/ui/card';
 	import customerStore from '$lib/stores/customers.store';
+	import type { LayoutServerLoad } from '../$types';
+
+	export let data: LayoutServerLoad;
 
 	let name: string = '';
 	let username: string = '';
@@ -69,7 +72,7 @@
 	<title>Users | Dush Products</title>
 </svelte:head>
 <Sheet.Root>
-	<SidebarLayout pageTitle="Users">
+	<SidebarLayout pageTitle="Users" user={data.user}>
 		<Customers />
 		<div slot="actions">
 			<Sheet.Trigger>
