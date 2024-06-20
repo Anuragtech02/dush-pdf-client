@@ -118,3 +118,15 @@ export async function getAllFiles(cookies: Cookies) {
 		headers: getAuthHeaders(cookies)
 	});
 }
+
+export async function deleteProduct(cookies: Cookies, id: number) {
+	return await API.delete('/products/' + id, {
+		headers: getAuthHeaders(cookies)
+	});
+}
+
+export async function deleteFile(cookies: Cookies, id: number) {
+	return await API.delete('/upload/files/' + id, {
+		headers: getAuthHeaders(cookies)
+	});
+}

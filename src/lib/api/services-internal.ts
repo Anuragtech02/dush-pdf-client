@@ -72,3 +72,11 @@ export async function createProductInternal(fileId: string, name: string) {
 export async function getAllFilesInternal() {
 	return await API_PRODUCTS.get('/');
 }
+
+export async function deleteProduct(id: number) {
+	return await API_PRODUCTS.delete('/delete/' + id);
+}
+
+export async function deleteFile(id: number) {
+	return await API_PRODUCTS.delete('/delete-file/' + id);
+}
