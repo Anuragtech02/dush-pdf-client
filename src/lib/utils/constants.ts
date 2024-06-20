@@ -4,3 +4,17 @@ export enum EPermissions {
 	READ = 'READ',
 	MANAGE = 'MANAGE'
 }
+
+export const RoutePermissions = [
+	{
+		route: '/directories',
+		method: 'POST',
+		permissions: [EPermissions.CREATE, EPermissions.MANAGE]
+	},
+	{
+		route: '/directories/create',
+		method: 'POST',
+		permissions: [EPermissions.CREATE, EPermissions.MANAGE]
+	},
+	{}
+];

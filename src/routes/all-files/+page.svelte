@@ -32,7 +32,11 @@
 			$productStore = [
 				...$productStore,
 				{
-					fileUrl: uploadedFile.url,
+					pdf: {
+						data: {
+							attributes: uploadedFile
+						}
+					},
 					id: createProdRes.data.data.id,
 					createdAt: createProdRes.data.data.attributes.createdAt,
 					name: createProdRes.data.data.attributes.name,
