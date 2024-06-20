@@ -10,6 +10,7 @@
 	import {
 		createProductInternal,
 		getDirectoryByIDInternal,
+		updateDirectoryInternal,
 		uploadFileInternal
 	} from '$lib/api/services-internal';
 	import { page } from '$app/stores';
@@ -19,6 +20,7 @@
 	import productStore, { type IProduct } from '$lib/stores/product.store';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
+	import directoryStore from '$lib/stores/directory.store';
 
 	let tabValue: string = 'grid';
 	export let data: LayoutServerLoad;
@@ -70,6 +72,21 @@
 			const uploadedFile = data[0];
 
 			const createProdRes = await createProductInternal(uploadedFile.id, name);
+
+			const updateDirecRes = await updateDirectoryInternal(parseInt(directoryId), {
+				data: {
+					products: [...products, createProdRes.data.data.id]
+				}
+			});
+
+			$directoryStore.folders = [
+				...$directoryStore.folders,
+				{
+					id: updateDirecRes.data.id,
+					...updateDirecRes.data.data.attributes
+				}
+			];
+
 			$productStore = [
 				...$productStore,
 				{
