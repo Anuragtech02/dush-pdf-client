@@ -16,5 +16,34 @@ export const RoutePermissions = [
 		method: 'POST',
 		permissions: [EPermissions.CREATE, EPermissions.MANAGE]
 	},
-	{}
+	{
+		route: '/directories/update',
+		method: 'PUT',
+		permissions: [EPermissions.MANAGE]
+	},
+	{
+		route: '/directories/delete',
+		method: 'DELETE',
+		permissions: [EPermissions.MANAGE]
+	},
+	{
+		route: '/users/create',
+		method: 'POST',
+		permissions: [EPermissions.MANAGE]
+	},
+	{
+		route: '/products/create',
+		method: 'POST',
+		permissions: [EPermissions.CREATE]
+	},
+	{
+		route: '/products/upload',
+		method: 'POST',
+		permissions: [EPermissions.CREATE]
+	},
+	{
+		route: '/products/delete',
+		method: 'DELETE',
+		permissions: [EPermissions.MANAGE]
+	}
 ];
