@@ -73,7 +73,7 @@
 			</div>
 		</div>
 		<div
-			class="flex w-full items-center justify-center gap-3 bg-slate-300 py-3"
+			class="py- flex w-full items-center gap-3 bg-slate-300 px-4 py-3"
 			on:click={() => {
 				handleClickLogout();
 			}}
