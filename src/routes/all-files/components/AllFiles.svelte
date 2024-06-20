@@ -4,7 +4,7 @@
 	import SearchIcon from 'lucide-svelte/icons/search';
 	import { onMount } from 'svelte';
 	import * as Table from '$lib/components/ui/table';
-	import productStore from '$lib/stores/product.store';
+	import productStore, { type IProduct } from '$lib/stores/product.store';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
 	import { LoaderCircle, TrashIcon } from 'lucide-svelte';
@@ -46,19 +46,20 @@
 	const getAllFiles = async () => {
 		const res = await getAllFilesInternal();
 
-		const tempFiles: any = [];
+		const tempFiles: IProduct[] = [];
 		if (res) {
 			res.data.data.forEach((file: any) => {
 				tempFiles.push({
 					id: file.id,
 					name: file.attributes.name,
-					fileUrl: file.attributes.pdf.data.attributes.url || '',
+					pdf: file.attributes.pdf,
 					createdAt: file.attributes.createdAt,
 					publishedAt: file.attributes.publishedAt,
 					updatedAt: file.attributes.updatedAt
 				});
 			});
 			$productStore = tempFiles;
+			filteredList = tempFiles;
 		}
 	};
 
@@ -99,7 +100,7 @@
 					<Table.Row>
 						<Table.Cell>
 							<a
-								href={file.fileUrl}
+								href={file.pdf.data.attributes.url}
 								target="_blank"
 								rel="noreferrer;noopener"
 								class="... max-w-[100px] truncate text-primary underline md:max-w-[400px]"

@@ -1,14 +1,16 @@
 import { writable } from 'svelte/store';
 
-interface IProductStore {
+export interface IProduct {
 	id: string;
 	name: string;
-	fileUrl: string;
+	pdf: {
+		[key: string]: any;
+	};
 	createdAt: string;
 	updatedAt: string;
 	publishedAt: string;
 }
 
-const productStore = writable<IProductStore[]>([]);
+const productStore = writable<IProduct[]>([]);
 
 export default productStore;
