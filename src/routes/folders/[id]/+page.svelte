@@ -7,16 +7,24 @@
 	import SidebarLayout from '$lib/components/layouts/SidebarLayout.svelte';
 	import type { LayoutServerLoad } from '../../$types';
 	import { onMount } from 'svelte';
-	import { getDirectoryByIDInternal } from '$lib/api/services-internal';
+	import {
+		createProductInternal,
+		getDirectoryByIDInternal,
+		uploadFileInternal
+	} from '$lib/api/services-internal';
 	import { page } from '$app/stores';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import SelectFile from './components/SelectFile.svelte';
 	import productStore, { type IProduct } from '$lib/stores/product.store';
+	import Input from '$lib/components/ui/input/input.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
 
 	let tabValue: string = 'grid';
 	export let data: LayoutServerLoad;
 	let isLoading: boolean = false;
+	let file: File;
+	let name: string = '';
 
 	let products: Array<any> = [];
 
@@ -52,11 +60,48 @@
 		products = tempProducts;
 	};
 
+	async function handleFileUpload() {
+		let isValid = false;
+		try {
+			const formData = new FormData();
+			formData.append('file', file);
+			const res = await uploadFileInternal(formData);
+			const data = res.data;
+			const uploadedFile = data[0];
+
+			const createProdRes = await createProductInternal(uploadedFile.id, name);
+			$productStore = [
+				...$productStore,
+				{
+					pdf: {
+						data: {
+							attributes: uploadedFile
+						}
+					},
+					id: createProdRes.data.data.id,
+					createdAt: createProdRes.data.data.attributes.createdAt,
+					name: createProdRes.data.data.attributes.name,
+					updatedAt: createProdRes.data.data.attributes.updatedAt,
+					publishedAt: createProdRes.data.data.attributes.publishedAt
+				}
+			];
+
+			isValid = true;
+		} catch (error) {
+			console.log('AUTH ERROR: ', error);
+			isValid = false;
+		}
+		isLoading = false;
+		return isValid;
+	}
+
 	onMount(() => {
 		getDirectoryItems();
 	});
 
-	function onSubmit() {}
+	function onSubmit() {
+		handleFileUpload();
+	}
 </script>
 
 <Sheet.Root>
@@ -93,21 +138,52 @@
 		<Sheet.Header>
 			<Sheet.Title>Add New File</Sheet.Title>
 			<Sheet.Description>
-				<form on:submit|preventDefault={onSubmit}>
-					<div class="grid gap-4">
-						<div class="grid gap-1">
-							<SelectFile />
-						</div>
-						<div class="flex items-center justify-center gap-1">
-							<hr class="flex-1" />
-							OR
-							<hr class="flex-1" />
-						</div>
-						<div class="grid gap-1">
-							<Button variant="secondary">Upload new file</Button>
-						</div>
+				<div class="grid gap-4">
+					<div class="grid gap-1">
+						<SelectFile />
 					</div>
-				</form>
+					<div class="flex items-center justify-center gap-1">
+						<hr class="flex-1" />
+						OR
+						<hr class="flex-1" />
+					</div>
+					<form on:submit|preventDefault={onSubmit}>
+						<div class="grid gap-4">
+							<div class="grid gap-1">
+								<Label class="sr-only" for="username">Username</Label>
+								<Input
+									id="name"
+									placeholder="File Name"
+									type="text"
+									required
+									autocapitalize="none"
+									autocomplete="name"
+									bind:value={name}
+									autocorrect="off"
+									disabled={isLoading}
+								/>
+							</div>
+							<div class="grid gap-1">
+								<Input
+									id="file"
+									placeholder="Choose file"
+									type="file"
+									required
+									on:change={(e) => {
+										// @ts-ignore
+										if (e.target?.files) file = e.target.files[0];
+									}}
+									autocorrect="off"
+									disabled={isLoading}
+									accept=".pdf"
+								/>
+							</div>
+							<div class="mt-2 grid gap-2">
+								<Button type="submit" variant="secondary">Upload new file</Button>
+							</div>
+						</div>
+					</form>
+				</div>
 			</Sheet.Description>
 		</Sheet.Header>
 	</Sheet.Content>
