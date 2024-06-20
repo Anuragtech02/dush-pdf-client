@@ -43,7 +43,7 @@ export async function getAllDirectories(cookies: Cookies) {
 }
 
 export async function getDirectoryByID(cookies: Cookies, id: string) {
-	return await API.get('/directories/' + id, {
+	return await API.get('/directories/' + id + '?populate[0]=products.pdf', {
 		headers: getAuthHeaders(cookies)
 	});
 }

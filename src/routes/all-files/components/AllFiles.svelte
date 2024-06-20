@@ -7,10 +7,41 @@
 	import productStore from '$lib/stores/product.store';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
-	import { TrashIcon } from 'lucide-svelte';
+	import { LoaderCircle, TrashIcon } from 'lucide-svelte';
+	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 
 	let filteredList: any = [];
 	let searchValue: string = '';
+
+	let loading: boolean = false;
+
+	let idToDelete: null | string = null;
+
+	async function handleDelete(id: string) {
+		try {
+			loading = true;
+			const res = await deleteProductInternal(parseInt(id));
+
+			if (res.status !== 200) {
+				console.log('Failed to delete folder');
+				toastStore.addToast('Failed to delete folder', { type: 'error' });
+
+				return;
+			}
+
+			toastStore.addToast('File deleted successfully', { type: 'success' });
+
+			// Remove the folder from the list
+			$productStore = $productStore.filter((f: any) => f.id !== id);
+		} catch (e) {
+			console.log('Failed to delete folder');
+			toastStore.addToast('Failed to delete folder', { type: 'error' });
+		} finally {
+			idToDelete = null;
+			loading = false;
+		}
+	}
 
 	const getAllFiles = async () => {
 		const res = await getAllFilesInternal();
@@ -21,7 +52,7 @@
 				tempFiles.push({
 					id: file.id,
 					name: file.attributes.name,
-					fileUrl: file.attributes.fileUrl || '',
+					fileUrl: file.attributes.pdf.data.attributes.url || '',
 					createdAt: file.attributes.createdAt,
 					publishedAt: file.attributes.publishedAt,
 					updatedAt: file.attributes.updatedAt
@@ -34,15 +65,6 @@
 	onMount(() => {
 		getAllFiles();
 	});
-
-	function handleDelete(file: any) {
-		console.log('Deleting file', file.name);
-		let loading = true;
-		setTimeout(() => {
-			$productStore = $productStore.filter((f) => f.name !== file.name);
-			loading = false;
-		}, 1000);
-	}
 
 	function handleSearch() {
 		filteredList = $productStore.filter((file: any) =>
@@ -82,27 +104,21 @@
 								rel="noreferrer;noopener"
 								class="... max-w-[100px] truncate text-primary underline md:max-w-[400px]"
 							>
-								{file.name}
+								{file.name}.pdf
 							</a>
 						</Table.Cell>
 						<Table.Cell>{new Date(file.createdAt).toLocaleDateString()}</Table.Cell>
 						<Table.Cell class="flex justify-end text-right">
-							<Popover.Root>
-								<Popover.Trigger asChild let:builder>
-									<Button builders={[builder]} variant="secondary">
-										<TrashIcon />
-									</Button>
-								</Popover.Trigger>
-								<Popover.Content>
-									<div class="flex items-center justify-center gap-4">
-										<p>Sure to remove the user?</p>
-										<div class="flex items-center justify-center gap-2">
-											<Button variant="secondary">No</Button>
-											<Button on:click={() => handleDelete(file)}>Yes</Button>
-										</div>
-									</div>
-								</Popover.Content>
-							</Popover.Root>
+							<Button
+								on:click={() => (idToDelete = file.id)}
+								variant="secondary"
+								disabled={loading}
+							>
+								{#if loading}
+									<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+								{/if}
+								<TrashIcon />
+							</Button>
 						</Table.Cell>
 					</Table.Row>
 				{/each}
@@ -110,3 +126,21 @@
 		</Table.Root>
 	</div>
 </div>
+
+<AlertDialog.Root open={Boolean(idToDelete)}>
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>Are you sure to delete folder?</AlertDialog.Title>
+			<AlertDialog.Description>
+				This action cannot be undone. This will permanently delete your file and remove it from our
+				servers.
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel on:click={() => (idToDelete = null)}>Cancel</AlertDialog.Cancel>
+			<AlertDialog.Action on:click={() => idToDelete && handleDelete(idToDelete)}
+				>Continue</AlertDialog.Action
+			>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
