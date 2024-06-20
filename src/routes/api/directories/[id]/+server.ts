@@ -6,7 +6,7 @@ export const GET: RequestHandler = async ({ params, cookies, locals }) => {
 
 	const user = locals.user;
 
-	const accessibleDirectories = user.attributes.accessibleDirectories.data;
+	const accessibleDirectories = user.attributes.accessibleDirectories;
 	console.log('Access', accessibleDirectories);
 	// const filters = "?filter["
 
