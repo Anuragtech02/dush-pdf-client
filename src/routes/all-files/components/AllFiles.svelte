@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getAllFilesInternal } from '$lib/api/services-internal';
+	import { deleteProductInternal, getAllFilesInternal } from '$lib/api/services-internal';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import SearchIcon from 'lucide-svelte/icons/search';
 	import { onMount } from 'svelte';
@@ -21,7 +21,13 @@
 	async function handleDelete(id: string) {
 		try {
 			loading = true;
-			const res = await deleteProductInternal(parseInt(id));
+			const currFile = $productStore.find((f: any) => f.id === id);
+			if (!currFile) {
+				toastStore.addToast('File not found', { type: 'error' });
+
+				return;
+			}
+			const res = await deleteProductInternal(parseInt(id), currFile.pdf.data.id);
 
 			if (res.status !== 200) {
 				console.log('Failed to delete folder');
@@ -32,8 +38,9 @@
 
 			toastStore.addToast('File deleted successfully', { type: 'success' });
 
-			// Remove the folder from the list
 			$productStore = $productStore.filter((f: any) => f.id !== id);
+
+			filteredList = $productStore;
 		} catch (e) {
 			console.log('Failed to delete folder');
 			toastStore.addToast('Failed to delete folder', { type: 'error' });
@@ -45,6 +52,8 @@
 
 	const getAllFiles = async () => {
 		const res = await getAllFilesInternal();
+
+		console.log(res.data);
 
 		const tempFiles: IProduct[] = [];
 		if (res) {

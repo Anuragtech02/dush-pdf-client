@@ -73,8 +73,8 @@ export async function getAllFilesInternal() {
 	return await API_PRODUCTS.get('/');
 }
 
-export async function deleteProductInternal(id: number) {
-	return await API_PRODUCTS.delete('/delete/' + id);
+export async function deleteProductInternal(id: number, fileId: number) {
+	return await API_PRODUCTS.delete('/delete/' + id + '_' + fileId);
 }
 
 export async function deleteFileInternal(id: number) {
