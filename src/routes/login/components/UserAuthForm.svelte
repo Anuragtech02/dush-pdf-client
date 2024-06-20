@@ -30,8 +30,10 @@
 		isLoading = true;
 		const isValidCall = await handleLoginCall();
 		if (isValidCall) {
-			console.log('Login Success');
-			goto('/');
+			const params = new URLSearchParams(window.location.search);
+			const redirect = params.get('redirect');
+
+			goto(redirect ? redirect : '/');
 		} else {
 			console.log('Login Failed');
 		}

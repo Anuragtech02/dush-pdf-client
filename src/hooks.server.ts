@@ -8,16 +8,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (event.request.url.endsWith('login')) {
 		return await resolve(event);
 	}
+
+	const baseRedirect = !event.request.url.includes('login') ? event.request.url : '';
+
+	const redirectUrl = baseRedirect ? `/login?redirect=${baseRedirect}` : '/login';
+
 	const dushAuth = event.cookies.get(AUTH_TOKEN);
 	if (!dushAuth) {
-		return redirect(301, '/login');
+		return redirect(301, redirectUrl);
 	}
 
 	const { isAuthorized, user } = await authMiddleware(event.cookies);
 
 	if (!isAuthorized) {
-		console.log('Unauthorized', user);
-		return redirect(301, '/login');
+		return redirect(301, redirectUrl);
 	}
 
 	// @ts-expect-error - add user to locals
