@@ -34,7 +34,7 @@
 				<ContextMenu.Content class="w-64">
 					<ContextMenu.Item
 						inset
-						on:click={() => copyToClipboard(`{hostedUrl}/view-pdf/${folder.id}`)}
+						on:click={() => copyToClipboard(`${hostedUrl}/view-pdf/${folder.id}`)}
 						>Copy Link</ContextMenu.Item
 					>
 

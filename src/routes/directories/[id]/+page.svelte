@@ -133,7 +133,7 @@
 </script>
 
 <Sheet.Root>
-	<SidebarLayout pageTitle="All Files" user={data.user}>
+	<SidebarLayout pageTitle="Directories > Files" user={data.user}>
 		<Tabs.Root bind:value={tabValue}>
 			<div class="flex w-full items-center justify-between">
 				<div>
