@@ -9,6 +9,7 @@
 	import { getPdfDataInternal } from '$lib/api/services-internal';
 	import { page } from '$app/stores';
 	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
+	import { toastStore } from '$lib/components/ui/toast/toastMessage.store.js';
 	export let data;
 	let PdfViewer;
 
@@ -20,11 +21,16 @@
 	async function fetchPdfData() {
 		let isValid = true;
 		dataLoading = true;
+		toastStore.addToast('Please wait while we download the file...', {
+			type: 'info',
+			duration: 5000
+		});
 		try {
 			const res = await getPdfDataInternal(parseInt($page.params.id));
 			pdfData = await res.data.pdfData;
 		} catch (error) {
 			console.log('AUTH ERROR: ', error);
+			toastStore.addToast('Failed to fetch file data', { type: 'error' });
 			isValid = false;
 		} finally {
 			dataLoading = false;
