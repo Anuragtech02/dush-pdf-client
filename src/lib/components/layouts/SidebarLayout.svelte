@@ -4,9 +4,11 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { logoutUserInternal } from '$lib/api/services-internal';
+	import { getCurrentUser, logoutUserInternal } from '$lib/api/services-internal';
 	import { toastStore } from '../ui/toast/toastMessage.store';
 	import { EPermissions } from '$lib/utils/constants';
+	import authStore from '$lib/stores/auth.store';
+	import { onMount } from 'svelte';
 
 	export let pageTitle: string = 'Home';
 	export let user: any;
@@ -37,8 +39,25 @@
 		doUserLogout();
 	}
 
-	$: user,
-		user?.attributes?.dush_roles?.data?.forEach((role: any) => {
+	async function fetchCurrentUser() {
+		try {
+			const res = await getCurrentUser();
+			console.log('Current User', res);
+			$authStore.user = res.data.data;
+		} catch (error) {
+			console.log('Error fetching current user', error);
+		}
+	}
+
+	onMount(() => {
+		if (!$authStore.user) {
+			console.log('No user data');
+			fetchCurrentUser();
+		}
+	});
+
+	function updateLinks() {
+		$authStore.user?.attributes?.dush_roles?.data?.forEach((role: any) => {
 			let permission = role.attributes.permission;
 			AllLinks.forEach((link) => {
 				if (link.requiredPermissions.includes(permission)) {
@@ -46,6 +65,11 @@
 				}
 			});
 		});
+	}
+
+	$: $authStore.user, updateLinks();
+
+	$: console.log({ $authStore });
 </script>
 
 <section class="h-screenn flex items-start justify-between">
@@ -60,8 +84,8 @@
 			<div class="px-4">
 				<nav class="mt-10 w-full">
 					<ul class="w-full space-y-2">
-						{#key links}
-							{#each links as link}
+						{#each links as link}
+							{#key links}
 								<li>
 									<a
 										href={link.href}
@@ -73,8 +97,8 @@
 												: $page.url.pathname.includes(link.href)}>{link.name}</a
 									>
 								</li>
-							{/each}
-						{/key}
+							{/key}
+						{/each}
 					</ul>
 				</nav>
 			</div>

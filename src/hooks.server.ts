@@ -2,40 +2,45 @@ import { authMiddleware } from '$lib/api/config';
 import { AUTH_TOKEN, EPermissions, RoutePermissions } from '$lib/utils/constants';
 import { redirect } from '@sveltejs/kit';
 
-import type { HandleFetch } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit';
 
-export const handleFetch: HandleFetch = async ({ event, fetch, request }) => {
+export const handle: Handle = async ({ event, resolve }) => {
 	console.log('Log');
 
-	const requestUrl = new URL(request.url);
+	const requestUrl = new URL(event.request.url);
 	const dushAuth = event.cookies.get(AUTH_TOKEN);
 	const requestMethod = event.request.method;
 
-	console.log('Request URL:', requestUrl.href);
-	console.log('DushAuth:', dushAuth);
-
 	// Bypass the login and logout routes
 	if (requestUrl.pathname.endsWith('login') || requestUrl.pathname.endsWith('logout')) {
-		return await fetch(request);
+		return await resolve(event);
 	}
-
-	// Create the redirect URL, but avoid appending multiple redirect parameters
-	// let redirectUrl = `/login?redirect=${encodeURIComponent(requestUrl.pathname + requestUrl.search)}`;
-	let redirectUrl = `/login`;
 
 	if (!dushAuth) {
 		console.log('Not found');
-		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-			status: 401
-		});
+		if (requestUrl.pathname.includes('api')) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				status: 401
+			});
+		}
+		if (requestUrl.pathname !== '/login') {
+			let redirectUrl = `/login?redirect=${encodeURIComponent(requestUrl.pathname)}`;
+			throw redirect(301, redirectUrl);
+		}
 	}
 
 	const { isAuthorized, user } = await authMiddleware(event.cookies);
 
 	if (!isAuthorized) {
-		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-			status: 401
-		});
+		if (requestUrl.pathname.includes('api')) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				status: 401
+			});
+		}
+		if (requestUrl.pathname !== '/login') {
+			let redirectUrl = `/login?redirect=${encodeURIComponent(requestUrl.pathname)}`;
+			return redirect(301, redirectUrl);
+		}
 	}
 
 	// @ts-expect-error - add user to locals
@@ -67,10 +72,14 @@ export const handleFetch: HandleFetch = async ({ event, fetch, request }) => {
 			method: requestMethod,
 			url: requestUrl.pathname
 		});
-		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-			status: 401
-		});
+		if (requestUrl.pathname !== '/login') {
+			let redirectUrl = `/login?redirect=${encodeURIComponent(requestUrl.pathname)}`;
+			return redirect(301, redirectUrl);
+		}
 	}
 
-	return await fetch(request);
+	event.locals.user = user;
+
+	const res = await resolve(event);
+	return res;
 };
