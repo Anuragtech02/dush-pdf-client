@@ -54,6 +54,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>View File | Dush Products</title>
+</svelte:head>
+
 <SidebarLayout user={data.user} pageTitle="View File">
 	<svelte:component this={PdfViewer} data={convertDataURIToBinary(pdfData)} />
 </SidebarLayout>
