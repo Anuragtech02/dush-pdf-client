@@ -41,7 +41,7 @@
 					<Table.Cell>{folder.id}</Table.Cell>
 					<Table.Cell>{folder.name}.pdf</Table.Cell>
 					<Table.Cell class="text-right">
-						<a href={folder.pdf.data.attributes.url} target="_blank" rel="noreferrer"> Open </a>
+						<a href={'/view-pdf/' + folder.id} rel="noreferrer"> Open </a>
 					</Table.Cell>
 				</Table.Row>
 				<!-- </ContextMenu.Trigger>

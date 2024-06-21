@@ -109,8 +109,7 @@
 					<Table.Row>
 						<Table.Cell>
 							<a
-								href={file.pdf.data.attributes.url}
-								target="_blank"
+								href={'/view-pdf/' + file.id}
 								rel="noreferrer;noopener"
 								class="... max-w-[100px] truncate text-primary underline md:max-w-[400px]"
 							>

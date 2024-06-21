@@ -60,7 +60,11 @@
                 <Table.Cell>Credit Card</Table.Cell>
                 <Table.Cell class="text-right">$250.00</Table.Cell> -->
 					<Table.Cell>{folder.id}</Table.Cell>
-					<Table.Cell>{folder.name}</Table.Cell>
+					<Table.Cell>
+						<a href="/directories/{folder.id}">
+							{folder.name}
+						</a>
+					</Table.Cell>
 					<Table.Cell>{new Date(folder.createdAt).toLocaleDateString()}</Table.Cell>
 					<Table.Cell>{new Date(folder.updatedAt).toLocaleDateString()}</Table.Cell>
 					<Table.Cell class="flex justify-end text-right">

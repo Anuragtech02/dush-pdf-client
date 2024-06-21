@@ -66,7 +66,11 @@
 									<a
 										href={link.href}
 										class="sidebar-link"
-										class:selected-link={$page.url.pathname === link.href}>{link.name}</a
+										class:selected-link={link.href === '/'
+											? $page.url.pathname === link.href
+											: $page.url.pathname.includes('directories') && link.href === '/'
+												? true
+												: $page.url.pathname.includes(link.href)}>{link.name}</a
 									>
 								</li>
 							{/each}
