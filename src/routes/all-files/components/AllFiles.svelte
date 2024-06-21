@@ -5,7 +5,6 @@
 	import { onMount } from 'svelte';
 	import * as Table from '$lib/components/ui/table';
 	import productStore, { type IProduct } from '$lib/stores/product.store';
-	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
 	import { LoaderCircle, TrashIcon } from 'lucide-svelte';
 	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
