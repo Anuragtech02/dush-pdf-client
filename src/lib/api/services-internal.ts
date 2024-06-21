@@ -84,3 +84,7 @@ export async function deleteFileInternal(id: number) {
 export async function getCurrentUser() {
 	return await API_USER.get('/fetch-current-user');
 }
+
+export async function getPdfDataInternal(id: number) {
+	return await API_PRODUCTS.get('/pdf-data/' + id);
+}

@@ -5,20 +5,37 @@
 	// import { browser } from '$app/environment';
 	// import PdfViewer from '$lib/components/ui/pdf-viewer/PdfViewer.svelte';
 	import { onMount } from 'svelte';
-	import type { PageData } from '../$types';
 	import SidebarLayout from '$lib/components/layouts/SidebarLayout.svelte';
-
-	export let data: PageData;
-	let pdfData = data.pdfData;
-	console.log({ pdfData });
+	import { getPdfDataInternal } from '$lib/api/services-internal';
+	import { page } from '$app/stores';
+	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
+	export let data;
 	let PdfViewer;
 
 	// let canvas;
 	// let context;
+	let pdfData = '';
+	let dataLoading = true;
+
+	async function fetchPdfData() {
+		let isValid = true;
+		dataLoading = true;
+		try {
+			const res = await getPdfDataInternal(parseInt($page.params.id));
+			pdfData = await res.data.pdfData;
+		} catch (error) {
+			console.log('AUTH ERROR: ', error);
+			isValid = false;
+		} finally {
+			dataLoading = false;
+		}
+	}
 
 	onMount(async () => {
 		const module = await import('$lib/components/ui/pdf-viewer/PdfViewer.svelte');
 		PdfViewer = module.default;
+
+		fetchPdfData();
 	});
 
 	// onMount(async () => {
@@ -59,5 +76,10 @@
 </svelte:head>
 
 <SidebarLayout user={data.user} pageTitle="View File">
-	<svelte:component this={PdfViewer} data={convertDataURIToBinary(pdfData)} />
+	{#if dataLoading}
+		<Skeleton class="h-[300px] w-full rounded-md" />
+		<Skeleton class="mt-4 h-[500px] w-full rounded-md" />
+	{:else}
+		<svelte:component this={PdfViewer} data={convertDataURIToBinary(pdfData)} />
+	{/if}
 </SidebarLayout>
