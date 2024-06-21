@@ -23,15 +23,6 @@
 
 	let links: Array<(typeof AllLinks)[0]> = [];
 
-	user?.attributes?.dush_roles.data.forEach((role: any) => {
-		let permission = role.attributes.permission;
-		AllLinks.forEach((link) => {
-			if (link.requiredPermissions.includes(permission)) {
-				links = [...links, link];
-			}
-		});
-	});
-
 	async function doUserLogout() {
 		try {
 			const res = await logoutUserInternal();
@@ -45,6 +36,16 @@
 	function handleClickLogout() {
 		doUserLogout();
 	}
+
+	$: user,
+		user?.attributes?.dush_roles?.data?.forEach((role: any) => {
+			let permission = role.attributes.permission;
+			AllLinks.forEach((link) => {
+				if (link.requiredPermissions.includes(permission)) {
+					links = [...links, link];
+				}
+			});
+		});
 </script>
 
 <section class="h-screenn flex items-start justify-between">
@@ -59,15 +60,17 @@
 			<div class="px-4">
 				<nav class="mt-10 w-full">
 					<ul class="w-full space-y-2">
-						{#each links as link}
-							<li>
-								<a
-									href={link.href}
-									class="sidebar-link"
-									class:selected-link={$page.url.pathname === link.href}>{link.name}</a
-								>
-							</li>
-						{/each}
+						{#key links}
+							{#each links as link}
+								<li>
+									<a
+										href={link.href}
+										class="sidebar-link"
+										class:selected-link={$page.url.pathname === link.href}>{link.name}</a
+									>
+								</li>
+							{/each}
+						{/key}
 					</ul>
 				</nav>
 			</div>

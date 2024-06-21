@@ -2,43 +2,60 @@ import { authMiddleware } from '$lib/api/config';
 import { AUTH_TOKEN, EPermissions, RoutePermissions } from '$lib/utils/constants';
 import { redirect } from '@sveltejs/kit';
 
-import type { Handle } from '@sveltejs/kit';
+import type { HandleFetch } from '@sveltejs/kit';
 
-export const handle: Handle = async ({ event, resolve }) => {
-	if (event.request.url.endsWith('login')) {
-		return await resolve(event);
+export const handleFetch: HandleFetch = async ({ event, fetch, request }) => {
+	console.log('Log');
+
+	const requestUrl = new URL(request.url);
+	const dushAuth = event.cookies.get(AUTH_TOKEN);
+	const requestMethod = event.request.method;
+
+	console.log('Request URL:', requestUrl.href);
+	console.log('DushAuth:', dushAuth);
+
+	// Bypass the login and logout routes
+	if (requestUrl.pathname.endsWith('login') || requestUrl.pathname.endsWith('logout')) {
+		return await fetch(request);
 	}
 
-	const baseRedirect = !event.request.url.includes('login') ? event.request.url : '';
+	// Create the redirect URL, but avoid appending multiple redirect parameters
+	// let redirectUrl = `/login?redirect=${encodeURIComponent(requestUrl.pathname + requestUrl.search)}`;
+	let redirectUrl = `/login`;
 
-	const redirectUrl = baseRedirect ? `/login?redirect=${baseRedirect}` : '/login';
-
-	const dushAuth = event.cookies.get(AUTH_TOKEN);
 	if (!dushAuth) {
-		return redirect(301, redirectUrl);
+		console.log('Not found');
+		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+			status: 401
+		});
 	}
 
 	const { isAuthorized, user } = await authMiddleware(event.cookies);
 
 	if (!isAuthorized) {
-		return redirect(301, redirectUrl);
+		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+			status: 401
+		});
 	}
 
 	// @ts-expect-error - add user to locals
 	event.locals.user = user;
-	const requestMethod = event.request.method;
+
 	const dushRoles: Array<{
 		attributes: {
 			permission: EPermissions;
 		};
 	}> = user.attributes.dush_roles.data;
+
 	let hasPermission = false;
+
 	if (requestMethod === 'GET') {
 		hasPermission = dushRoles.some((role) => role.attributes.permission === EPermissions.READ);
 	}
 
+	// Check for route permissions
 	RoutePermissions.forEach((route) => {
-		if (event.request.url.includes(route.url) && route.method === requestMethod) {
+		if (requestUrl.pathname.includes(route.url) && route.method === requestMethod) {
 			hasPermission = dushRoles.some((role) =>
 				route.permissions.includes(role.attributes.permission)
 			);
@@ -48,11 +65,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (!hasPermission) {
 		console.log('User not authorized for ', {
 			method: requestMethod,
-			url: event.request.url
+			url: requestUrl.pathname
 		});
 		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 			status: 401
 		});
 	}
-	return await resolve(event);
+
+	return await fetch(request);
 };
