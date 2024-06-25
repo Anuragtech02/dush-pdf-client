@@ -38,7 +38,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	RoutePermissions.forEach((route) => {
-		if (event.request.url.includes(route.url) && route.method === requestMethod) {
+		if (event.request.url.includes(route.route) && route.method === requestMethod) {
 			hasPermission = dushRoles.some((role) =>
 				route.permissions.includes(role.attributes.permission)
 			);
