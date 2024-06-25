@@ -21,10 +21,13 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import directoryStore from '$lib/stores/directory.store';
+	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
+	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
 
 	let tabValue: string = 'grid';
 	export let data: LayoutServerLoad;
 	let isLoading: boolean = false;
+	let isDataLoading: boolean = false;
 	let file: File;
 	let name: string = '';
 
@@ -33,33 +36,41 @@
 	const directoryId = $page.params.id;
 
 	const getDirectoryItems = async () => {
-		const res = await getDirectoryByIDInternal(directoryId);
+		isDataLoading = true;
+		try {
+			const res = await getDirectoryByIDInternal(directoryId);
 
-		if (res.status !== 200) {
-			return;
-		}
+			if (res.status !== 200) {
+				return;
+			}
 
-		let tempFolders: any;
+			let tempFolders: any;
 
-		tempFolders = {
-			id: res.data.id,
-			...res.data.data.attributes
-		};
+			tempFolders = {
+				id: res.data.id,
+				...res.data.data.attributes
+			};
 
-		const tempProducts: IProduct[] = [];
+			const tempProducts: IProduct[] = [];
 
-		tempFolders.products.data.forEach((product: any) => {
-			tempProducts.push({
-				id: product.id.toString(),
-				name: product.attributes.name,
-				pdf: product.attributes.pdf,
-				createdAt: product.createdAt,
-				updatedAt: product.updatedAt,
-				publishedAt: product.publishedAt
+			tempFolders.products.data.forEach((product: any) => {
+				tempProducts.push({
+					id: product.id.toString(),
+					name: product.attributes.name,
+					pdf: product.attributes.pdf,
+					createdAt: product.createdAt,
+					updatedAt: product.updatedAt,
+					publishedAt: product.publishedAt
+				});
 			});
-		});
 
-		products = tempProducts;
+			products = tempProducts;
+		} catch (error) {
+			console.log('Failed to fetch files', error);
+			toastStore.addToast('Failed to fetch files', { type: 'error' });
+		} finally {
+			isDataLoading = false;
+		}
 	};
 
 	async function handleFileUpload() {
@@ -122,7 +133,7 @@
 </script>
 
 <Sheet.Root>
-	<SidebarLayout pageTitle="All Files" user={data.user}>
+	<SidebarLayout pageTitle="Directories > Files" user={data.user}>
 		<Tabs.Root bind:value={tabValue}>
 			<div class="flex w-full items-center justify-between">
 				<div>
@@ -137,12 +148,20 @@
 					</Tabs.Trigger>
 				</Tabs.List>
 			</div>
-			<Tabs.Content value="grid" class="mt-4">
-				<GridLayoutFiles folders={products} />
-			</Tabs.Content>
-			<Tabs.Content value="list">
-				<TableLayoutFiles folders={products} />
-			</Tabs.Content>
+			{#if isDataLoading || isLoading}
+				<div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+					{#each Array(6) as i}
+						<Skeleton class="h-[100px] w-full rounded-md" />
+					{/each}
+				</div>
+			{:else}
+				<Tabs.Content value="grid" class="mt-4">
+					<GridLayoutFiles folders={products} />
+				</Tabs.Content>
+				<Tabs.Content value="list">
+					<TableLayoutFiles folders={products} />
+				</Tabs.Content>
+			{/if}
 		</Tabs.Root>
 		<div slot="actions">
 			<Sheet.Trigger>

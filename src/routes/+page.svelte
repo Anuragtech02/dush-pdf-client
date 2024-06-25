@@ -15,6 +15,8 @@
 
 	export let data: LayoutServerLoad;
 
+	console.log('Data', data);
+
 	let isLoading: boolean = false;
 	let createOpen: boolean = false;
 	let name: string = '';

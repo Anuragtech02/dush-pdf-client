@@ -43,7 +43,7 @@ export async function getAllDirectories(cookies: Cookies) {
 }
 
 export async function getDirectoryByID(cookies: Cookies, id: string) {
-	return await API.get('/directories/' + id + '?populate[0]=products.pdf', {
+	return await API.get('/directories/' + id + '?populate=*', {
 		headers: getAuthHeaders(cookies)
 	});
 }
@@ -114,7 +114,7 @@ export async function createProduct(
 }
 
 export async function getAllFiles(cookies: Cookies) {
-	return await API.get('/products?populate[0]=pdf.url', {
+	return await API.get('/products?populate=*', {
 		headers: getAuthHeaders(cookies)
 	});
 }
@@ -127,6 +127,12 @@ export async function deleteProduct(cookies: Cookies, id: number) {
 
 export async function deleteFile(cookies: Cookies, id: number) {
 	return await API.delete('/upload/files/' + id, {
+		headers: getAuthHeaders(cookies)
+	});
+}
+
+export async function getProuctById(cookies: Cookies, id: number) {
+	return await API.get('/products/' + id + '?populate=pdf.url', {
 		headers: getAuthHeaders(cookies)
 	});
 }

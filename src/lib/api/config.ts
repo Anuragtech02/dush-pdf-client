@@ -29,6 +29,13 @@ export async function authMiddleware(cookies: Cookies) {
 	try {
 		const decoded = jwt.verify(authToken, JWT_SECRET) as { id: number };
 
+		if (!decoded) {
+			return {
+				isAuthorized: false,
+				user: {}
+			};
+		}
+
 		const userRes = await getUserByID(cookies, decoded.id);
 
 		if (!userRes.data) {

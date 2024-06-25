@@ -6,6 +6,7 @@
 	import { cn } from '$lib/utils.js';
 	import { loginUserInternal } from '$lib/api/services-internal';
 	import { goto } from '$app/navigation';
+	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };
@@ -27,6 +28,10 @@
 
 	async function onSubmit() {
 		if (isLoading) return;
+		if (!username || !password) {
+			toastStore.addToast('Please fill in all fields', { type: 'error' });
+			return console.log('Please fill in all fields');
+		}
 		isLoading = true;
 		const isValidCall = await handleLoginCall();
 		if (isValidCall) {
@@ -50,6 +55,7 @@
 					id="username"
 					placeholder="Username"
 					type="text"
+					required
 					autocapitalize="none"
 					autocomplete="username"
 					bind:value={username}
@@ -62,6 +68,7 @@
 				<Input
 					id="password"
 					placeholder="********"
+					required
 					type="password"
 					autocapitalize="none"
 					autocomplete="password"

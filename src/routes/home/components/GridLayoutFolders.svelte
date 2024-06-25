@@ -47,7 +47,7 @@
 	class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
 >
 	{#each folders as folder}
-		<a href={`/folders/${folder.id}`} class="hover:[&>div]:bg-slate-200">
+		<a href={`/directories/${folder.id}`} class="hover:[&>div]:bg-slate-200">
 			<ContextMenu.Root>
 				<ContextMenu.Trigger>
 					<Folder name={folder.name} id={folder.id} />
@@ -55,7 +55,7 @@
 				<ContextMenu.Content class="w-64">
 					<ContextMenu.Item inset on:click={() => (idToDelete = folder.id)}>Delete</ContextMenu.Item
 					>
-					<ContextMenu.Item inset on:click={() => openURL(`/folders/${folder.id}`)}
+					<ContextMenu.Item inset on:click={() => openURL(`/directories/${folder.id}`)}
 						>Open</ContextMenu.Item
 					>
 				</ContextMenu.Content>

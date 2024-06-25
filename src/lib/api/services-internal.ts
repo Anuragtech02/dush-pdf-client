@@ -80,3 +80,11 @@ export async function deleteProductInternal(id: number, fileId: number) {
 export async function deleteFileInternal(id: number) {
 	return await API_PRODUCTS.delete('/delete-file/' + id);
 }
+
+export async function getCurrentUser() {
+	return await API_USER.get('/fetch-current-user');
+}
+
+export async function getPdfDataInternal(id: number) {
+	return await API_PRODUCTS.get('/pdf-data/' + id);
+}
