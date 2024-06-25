@@ -23,6 +23,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import customerStore from '$lib/stores/customers.store';
 	import type { LayoutServerLoad } from '../$types';
+	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
 
 	export let data: LayoutServerLoad;
 
@@ -66,6 +67,13 @@
 			console.log('User Creation Failed');
 		}
 	}
+
+	const handleCopyText = (text: string) => {
+		navigator.clipboard.writeText(text);
+		toastStore.addToast('Text copied to clipboard', {
+			type: 'success'
+		});
+	};
 </script>
 
 <svelte:head>
@@ -181,7 +189,7 @@
 										<p><strong>Username: </strong></p>
 										<p>{resUser?.username}</p>
 									</div>
-									<Button variant="secondary">
+									<Button variant="secondary" on:click={() => handleCopyText(resUser?.username)}>
 										<CopyIcon class="h-5 w-3" />
 									</Button>
 								</div>
@@ -190,7 +198,7 @@
 										<p><strong>Password: </strong></p>
 										<p>{resUser?.password}</p>
 									</div>
-									<Button variant="secondary">
+									<Button variant="secondary" on:click={() => handleCopyText(resUser?.password)}>
 										<CopyIcon class="h-5 w-3" />
 									</Button>
 								</div>
