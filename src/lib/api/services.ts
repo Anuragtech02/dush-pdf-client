@@ -61,7 +61,7 @@ export async function createDirectory(cookies: Cookies, name: string, id: number
 }
 
 export async function updateDirectory(cookies: Cookies, id: number, data: any) {
-	return await API.post(
+	return await API.put(
 		'/directories/' + id,
 		{
 			data

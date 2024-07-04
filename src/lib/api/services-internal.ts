@@ -37,7 +37,7 @@ export async function createDirectoryInternal(name: string) {
 }
 
 export async function updateDirectoryInternal(id: number, data: any) {
-	return await API_DIRECTORY.post('/update/' + id, {
+	return await API_DIRECTORY.put('/update/' + id, {
 		data
 	});
 }
