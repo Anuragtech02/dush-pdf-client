@@ -2,8 +2,14 @@
 	import File from '$lib/components/ui/file/file.svelte';
 	import * as ContextMenu from '$lib/components/ui/context-menu/index.js';
 	import { goto } from '$app/navigation';
+	import { updateDirectoryInternal } from '$lib/api/services-internal';
+	import { page } from '$app/stores';
+	import productStore from '$lib/stores/product.store';
+	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
 
 	export let folders: Array<any> = [];
+
+	const directoryId = $page.params.id;
 
 	const hostedUrl = import.meta.env.VITE_HOSTED_URL;
 
@@ -19,6 +25,33 @@
 
 	const openURL = (url: string) => {
 		goto(url);
+	};
+
+	const handleDelete = (id: string) => {
+		console.log('Delete', id);
+	};
+
+	const handleRemoveFromDirectory = async (id: string) => {
+		const updatedFolders = folders.filter((folder) => folder.id !== id);
+
+		console.log('updatedFolders', updatedFolders);
+
+		const updateDirecRes = await updateDirectoryInternal(parseInt(directoryId), {
+			data: {
+				products: updatedFolders.map((folder) => folder.id)
+			}
+		});
+
+		if (updateDirecRes.status === 200) {
+			folders = updatedFolders;
+			toastStore.addToast('Successfully removed from directory', {
+				type: 'success'
+			});
+		} else {
+			toastStore.addToast('Failed to remove from directory', {
+				type: 'error'
+			});
+		}
 	};
 </script>
 
@@ -40,6 +73,10 @@
 
 					<ContextMenu.Item inset on:click={() => openURL(`{hostedUrl}/view-pdf/${folder.id}`)}
 						>Open</ContextMenu.Item
+					>
+					<ContextMenu.Item inset on:click={() => handleDelete(folder.id)}>Delete</ContextMenu.Item>
+					<ContextMenu.Item inset on:click={() => handleRemoveFromDirectory(folder.id)}
+						>Remove from directory</ContextMenu.Item
 					>
 				</ContextMenu.Content>
 			</ContextMenu.Root>

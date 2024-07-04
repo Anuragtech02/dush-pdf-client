@@ -1,12 +1,13 @@
 <script lang="ts">
 	import Check from 'lucide-svelte/icons/check';
 	import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
-	import { onDestroy, tick } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
 	import * as Command from '$lib/components/ui/command/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '$lib/utils.js';
 	import productStore, { type IProduct } from '$lib/stores/product.store';
+	import { getAllFilesInternal } from '$lib/api/services-internal';
 
 	let open = false;
 	let value = '';
@@ -14,10 +15,31 @@
 	// Subscribe to the product store
 	let products: IProduct[] = [];
 
-	const unsubscribe = productStore.subscribe((data) => {
-		products = data;
-	});
-	$: selectedProduct = products.find((p) => p.id === value)?.name ?? 'Select a product...';
+	const getAllFiles = async () => {
+		const res = await getAllFilesInternal();
+
+		const tempFiles: IProduct[] = [];
+		if (res) {
+			res.data.data.forEach((file: any) => {
+				tempFiles.push({
+					id: file.id,
+					name: file.attributes.name,
+					pdf: file.attributes.pdf,
+					createdAt: file.attributes.createdAt,
+					publishedAt: file.attributes.publishedAt,
+					updatedAt: file.attributes.updatedAt
+				});
+			});
+			$productStore = tempFiles;
+			products = tempFiles;
+		}
+	};
+
+	// const unsubscribe = productStore.subscribe((data) => {
+	// 	products = data;
+	// });
+	$: selectedProduct =
+		products.find((p) => p.id.toString() === value)?.name ?? 'Select a product...';
 
 	function closeAndFocusTrigger(triggerId: string) {
 		open = false;
@@ -26,10 +48,14 @@
 		});
 	}
 
-	// Cleanup subscription when the component is destroyed
-	onDestroy(() => {
-		unsubscribe();
+	onMount(() => {
+		getAllFiles();
 	});
+
+	// Cleanup subscription when the component is destroyed
+	// onDestroy(() => {
+	// 	unsubscribe();
+	// });
 </script>
 
 <Popover.Root bind:open let:ids>
@@ -52,13 +78,15 @@
 			<Command.Group>
 				{#each products as product}
 					<Command.Item
-						value={product.id}
+						value={product.id.toString()}
 						onSelect={(currentValue) => {
 							value = currentValue;
 							closeAndFocusTrigger(ids.trigger);
 						}}
 					>
-						<Check class={cn('mr-2 h-4 w-4', value !== product.id && 'text-transparent')} />
+						<Check
+							class={cn('mr-2 h-4 w-4', value !== product.id.toString() && 'text-transparent')}
+						/>
 						{product.name}
 					</Command.Item>
 				{/each}
