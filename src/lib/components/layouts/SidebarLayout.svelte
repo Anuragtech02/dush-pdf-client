@@ -20,7 +20,8 @@
 			href: '/all-files',
 			requiredPermissions: [EPermissions.CREATE, EPermissions.MANAGE]
 		},
-		{ name: 'Customers', href: '/customers', requiredPermissions: [EPermissions.MANAGE] }
+		{ name: 'Customers', href: '/customers', requiredPermissions: [EPermissions.MANAGE] },
+		{ name: 'Roles', href: '/roles', requiredPermissions: [EPermissions.MANAGE] }
 	];
 
 	let links: Array<(typeof AllLinks)[0]> = [];

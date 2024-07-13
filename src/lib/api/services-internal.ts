@@ -1,4 +1,4 @@
-import { API_AUTH, API_DIRECTORY, API_PRODUCTS, API_USER } from './config-internal';
+import { API_AUTH, API_DIRECTORY, API_PRODUCTS, API_ROLES, API_USER } from './config-internal';
 
 export async function loginUserInternal(username: string, password: string) {
 	return await API_AUTH.post('/login', {
@@ -87,4 +87,8 @@ export async function getCurrentUser() {
 
 export async function getPdfDataInternal(id: number) {
 	return await API_PRODUCTS.get('/pdf-data/' + id);
+}
+
+export async function getAllRolesInternal() {
+	return await API_ROLES.get('/');
 }

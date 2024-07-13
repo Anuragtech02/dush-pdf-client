@@ -29,3 +29,10 @@ export const API_PRODUCTS = axios.create({
 		'Content-Type': 'application/json'
 	}
 });
+
+export const API_ROLES = axios.create({
+	baseURL: API_URL + '/roles',
+	headers: {
+		'Content-Type': 'application/json'
+	}
+});

@@ -136,3 +136,21 @@ export async function getProuctById(cookies: Cookies, id: number) {
 		headers: getAuthHeaders(cookies)
 	});
 }
+
+export async function createRole(cookies: Cookies, name: string, permission: string) {
+	return await API.post(
+		'/roles',
+		{
+			data: { name, permission }
+		},
+		{
+			headers: getAuthHeaders(cookies)
+		}
+	);
+}
+
+export async function getAllRoles(cookies: Cookies) {
+	return await API.get('/dush-roles?populate=permissions.permission', {
+		headers: getAuthHeaders(cookies)
+	});
+}
