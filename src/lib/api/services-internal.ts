@@ -92,3 +92,10 @@ export async function getPdfDataInternal(id: number) {
 export async function getAllRolesInternal() {
 	return await API_ROLES.get('/');
 }
+
+export async function createRoleInternal(name: string, permissions: string[]) {
+	return await API_ROLES.post('/create', {
+		name,
+		permissions
+	});
+}

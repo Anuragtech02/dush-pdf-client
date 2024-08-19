@@ -137,11 +137,11 @@ export async function getProuctById(cookies: Cookies, id: number) {
 	});
 }
 
-export async function createRole(cookies: Cookies, name: string, permission: string) {
+export async function createRole(cookies: Cookies, name: string, permissions: string[]) {
 	return await API.post(
-		'/roles',
+		'/dush-roles',
 		{
-			data: { name, permission }
+			data: { name, permissions }
 		},
 		{
 			headers: getAuthHeaders(cookies)

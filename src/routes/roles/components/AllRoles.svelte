@@ -7,16 +7,43 @@
 	import { LoaderCircle, TrashIcon } from 'lucide-svelte';
 	import { toastStore } from '$lib/components/ui/toast/toastMessage.store';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
-	import type { IRole } from '$lib/stores/role.store';
 	import roleStore from '$lib/stores/role.store';
-	import { Switch } from '$lib/components/ui/switch';
+	import Switch from '$lib/components/ui/switch/switch.svelte';
+	import { ALL_PERMISSIONS } from '$lib/utils/constants';
 
-	let filteredList: any = [];
-	let searchValue: string = '';
+	type Permission = (typeof ALL_PERMISSIONS)[number];
 
-	let loading: boolean = false;
+	interface IRole {
+		id: string;
+		name: string;
+		permissions: Array<{ id: number; permission: string }>;
+		createdAt: string;
+		publishedAt: string;
+		updatedAt: string;
+	}
 
-	let idToDelete: null | string = null;
+	interface RolePermissions {
+		[roleId: string]: {
+			[K in Permission]: boolean;
+		};
+	}
+
+	interface ParentSwitchState {
+		checked: boolean;
+		indeterminate: boolean;
+	}
+
+	interface ParentSwitchStates {
+		[roleId: string]: ParentSwitchState;
+	}
+
+	let filteredList: IRole[] = [];
+	let searchValue = '';
+	let loading = false;
+	let idToDelete: string | null = null;
+
+	let rolePermissions: RolePermissions = {};
+	let parentSwitchStates: ParentSwitchStates = {};
 
 	async function handleDelete(id: string) {
 		try {
@@ -27,14 +54,14 @@
 
 				return;
 			}
-			const res = await deleteProductInternal(parseInt(id), currFile.pdf.data.id);
+			// const res = await deleteRoleInernal(id);
 
-			if (res.status !== 200) {
-				console.log('Failed to delete folder');
-				toastStore.addToast('Failed to delete folder', { type: 'error' });
+			// if (res.status !== 200) {
+			// 	console.log('Failed to delete folder');
+			// 	toastStore.addToast('Failed to delete folder', { type: 'error' });
 
-				return;
-			}
+			// 	return;
+			// }
 
 			toastStore.addToast('File deleted successfully', { type: 'success' });
 
@@ -50,9 +77,10 @@
 		}
 	}
 
-	const getAllRoles = async () => {
+	const getAllRoles = async (): Promise<void> => {
 		if ($roleStore.length > 0) {
 			filteredList = $roleStore;
+			initializeRolePermissions();
 			return;
 		}
 		loading = true;
@@ -61,7 +89,7 @@
 		console.log(res.data);
 
 		const tempRoles: IRole[] = [];
-		if (res) {
+		if (res && res.data && res.data.data) {
 			res.data.data.forEach((file: any) => {
 				tempRoles.push({
 					id: file.id,
@@ -73,16 +101,60 @@
 				});
 			});
 			filteredList = tempRoles;
+			$roleStore = tempRoles;
+			initializeRolePermissions();
 		}
 		loading = false;
 	};
+
+	function initializeRolePermissions(): void {
+		rolePermissions = $roleStore.reduce<RolePermissions>((acc, role) => {
+			acc[role.id] = ALL_PERMISSIONS.reduce(
+				(permAcc, permission) => {
+					// Check if the permission exists in the role's permissions array
+					permAcc[permission] = role.permissions.some((p) => p.permission === permission);
+					return permAcc;
+				},
+				{} as { [K in Permission]: boolean }
+			);
+			return acc;
+		}, {});
+		updateParentSwitchStates();
+	}
+
+	function handlePermissionChange(roleId: string, permission: Permission, checked: boolean): void {
+		rolePermissions[roleId][permission] = checked;
+		rolePermissions = { ...rolePermissions }; // Trigger reactivity
+		updateParentSwitchStates();
+	}
+
+	function handleParentPermissionChange(roleId: string, checked: boolean): void {
+		ALL_PERMISSIONS.forEach((permission) => {
+			rolePermissions[roleId][permission] = checked;
+		});
+		rolePermissions = { ...rolePermissions }; // Trigger reactivity
+		updateParentSwitchStates();
+	}
+
+	function updateParentSwitchStates(): void {
+		parentSwitchStates = Object.keys(rolePermissions).reduce<ParentSwitchStates>((acc, roleId) => {
+			const permissions = rolePermissions[roleId];
+			const allChecked = ALL_PERMISSIONS.every((permission) => permissions[permission]);
+			const someChecked = ALL_PERMISSIONS.some((permission) => permissions[permission]);
+			acc[roleId] = {
+				checked: allChecked,
+				indeterminate: !allChecked && someChecked
+			};
+			return acc;
+		}, {});
+	}
 
 	onMount(() => {
 		getAllRoles();
 	});
 
-	function handleSearch() {
-		filteredList = $roleStore.filter((role: any) =>
+	function handleSearch(): void {
+		filteredList = $roleStore.filter((role: IRole) =>
 			role.name.toLowerCase().includes(searchValue.toLowerCase())
 		);
 	}
@@ -110,16 +182,25 @@
 					<Collapsible.Trigger class="w-full p-2 px-4">
 						<div class="flex w-full items-center justify-between">
 							<p><strong>{role.name}</strong></p>
-							<Switch />
+							<Switch
+								checked={parentSwitchStates[role.id]?.checked || false}
+								class={parentSwitchStates[role.id]?.indeterminate ? '!bg-yellow-500' : ''}
+								onCheckedChange={(checked) => handleParentPermissionChange(role.id, checked)}
+							/>
 						</div>
 					</Collapsible.Trigger>
 					<Collapsible.Content class="grid grid-cols-1 bg-slate-50 md:grid-cols-2">
-						{#each role.permissions as permission}
+						{#each ALL_PERMISSIONS as permission}
 							<div class="flex w-full items-center justify-between p-2 px-4">
 								<p class="capitalize">
-									{permission.permission?.replace(/_/g, ' ').toLowerCase()}
+									{permission.replace(/_/g, ' ').toLowerCase()}
 								</p>
-								<Switch />
+								<Switch
+									checked={rolePermissions[role.id]?.[permission] || false}
+									on:click={(e) => e.stopPropagation()}
+									onCheckedChange={(checked) =>
+										handlePermissionChange(role.id, permission, checked)}
+								/>
 							</div>
 						{/each}
 					</Collapsible.Content>

@@ -1,21 +1,22 @@
-import { createCustomer } from '$lib/api/services';
+import { createRole } from '$lib/api/services';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const requestObj = await request.json();
 	const userReq = {
-		expiry: requestObj.expiry,
 		name: requestObj.name,
-		username: requestObj.username || null
+		permissions: requestObj.permissions.map((permission: string) => ({
+			permission
+		}))
 	};
 
-	if (!userReq.name || !userReq.expiry) {
-		return new Response(JSON.stringify({ message: 'Name and Expiry are required' }), {
+	if (!userReq.name || !userReq.permissions) {
+		return new Response(JSON.stringify({ message: 'Name and Permision are required' }), {
 			status: 400
 		});
 	}
 
-	const res = await createCustomer(cookies, userReq.expiry, userReq.name, userReq.username);
+	const res = await createRole(cookies, userReq.name, userReq.permissions);
 
 	const response = new Response(JSON.stringify(res.data), {
 		status: res.status,
